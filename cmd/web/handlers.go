@@ -7,10 +7,9 @@ import (
 	"strconv"
 )
 
-//Methodising the function
-func (app *application) home(w http.ResponseWriter, r *http.Request) {
+func (app *App) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		http.NotFound(w, r)
+		app.notFound(w)	// Use the notFound() helper 
 		return
 	}
 	files := []string{
@@ -20,34 +19,31 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	ts, err := template.ParseFiles(files...)
 	if err != nil {
-		//use logger defined in application here
-		app.errorLog.Println(err.Error())
+		app.serverError(w,err)  // Use the serverError() helper. 
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
 	err = ts.Execute(w, nil)
 	if err != nil {
-		//also here
-		app.errorLog.Println(err.Error())
+		app.serverError(w,err)  // Use the serverError() helper. 
 		http.Error(w, "Internal Server Error", 500)
 	}
 }
 
-//Methodising the function
-func (app *application) showGist(w http.ResponseWriter, r *http.Request) {
+func (app *App) showGist(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
-		http.NotFound(w, r)
+		app.notFound(w)	// Use the notFound() helper 
 		return
 	}
 	fmt.Fprintf(w, "Display a specific gist with ID %d..", id)
 }
 
 //Methodising the function
-func (app *application) createGist(w http.ResponseWriter, r *http.Request) {
+func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		w.Header().Set("Allow", "POST")
-		http.Error(w, "Method Not Allowed", 405)
+		app.clientError(w, http.StatusMethodNotAllowed)   //use clientError
 		return
 	}
 	w.Write([]byte("Create a new gist..."))

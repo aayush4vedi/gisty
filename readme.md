@@ -3,7 +3,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 
 ## Usage
 * To run`$ go run cmd/web/* `
-* To check code at any step, see the attached files(@Code).It has only those files which were updated, along with the comments for what, why & Huhs
+* To check code at any step, see the attached files(@Code).It has only those files which were updated, along with the comments for what, why & Huhs.This is also acheivable by matching the commits(starting from section #2.3)
 
 
 
@@ -142,10 +142,30 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     ```
     * Import them in `handler.go` to make all the functions as methods
     * Swap the route declarations to use the application struct's methods as handler functio
-* Code: [main.go]() , [handlers.go]()
+* Code: [main.go](https://github.com/aayush4vedi/gisty/blob/a3a837961ca64776e318f9253010600844125c9a/cmd/web/main.go) , [handlers.go](https://github.com/aayush4vedi/gisty/blob/a3a837961ca64776e318f9253010600844125c9a/cmd/web/handlers.go)
 
+* @Notes: **On Closure**
+    * This pattern for inject dependencies won’t work if your handlers are spread across multiple packages. 
+    * **Better approacb**: to create a `config` package exporting an `Application` struct and have your handler functions close over this to form a closure.
+    * ```go
+        func main() { 
+            app := &config.Application{ 
+                ErrorLog: log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+             }...
+        ```
+    
+### 2.3 Centralized Error Handling
+* @What: Move the error handling code into helper methods. This will help separate our concerns and stop repitition.
+    * In `cmd/web/errors.go`:
+        * `serverError` : sends a generic 500 Internal Server Error response to the user. 
+            * Uses the `debug.Stack()` function to get a stack trace for the current goroutine and append it to the log message.
+        * `clientError` : helper sends a specific status code and corresponding description
+            * Uses the  http.StatusText()` function to automatically generate a human-friendly text representation of a given HTTP status code
+        * `notFound` : sends a 404 Not Found 
+            *  Uses the constant `http.StatusNotFound` instead of writing 404. 
+    * Update errors in handler
 
-
+* @Code: [errors.go]() , [handlers.go]()
 
 
 ## 3. DB-driven Responses
