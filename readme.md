@@ -74,15 +74,23 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
   * **cmd** : application-specific code(web, cli)
     * cmd/web : contains `main.go` & `handlers.go` or this project
   * **pkg** : reusable non-application-specific code(validation helpers, SQL models)
-  * **ui**
+  * **ui**       
     * ui/html : html templates
     * ui/static : static files(css, imgs)
  
 ### 1.6 Add HTML Template & Inheritence
 * @What: Add a template file & use in headers using `html/template` pkg
-    * Read template file:`ts, err := template.ParseFiles("./ui/html/home.page.tmpl")`
-    * Write template content as response body.(`nil` is in place for dynamic data part):<br>`err = ts.Execute(w, nil)`
-* @Code: [home.page.tmpl](), [handlers.go]()
+    * In handler:
+        * Read template file:`ts, err := template.ParseFiles("./ui/html/home.page.tmpl")`
+        * Write template content as response body.(`nil` is in place for dynamic data part):<br>`err = ts.Execute(w, nil)`
+    * Smart templating(inheritence):
+        * Define custom templates: `title`, `base`, `body` & import them in your templates
+        * `{{define "base"}}...{{end}}` to define a named template called `base`
+            * You can define multiple templates inside a single files
+        * `{{template "title" .}}` to invoke other a named templates called `title` 
+        * The dot at the end of the `{{template "title" .}}` action represents any dynamic data that you want to pass to the invoked template(later)
+    * Use the `template.ParseFiles()` function to read the files and store the templates in a template set(as variadic param...)
+* @Code: [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/e387093c52e18fa46dc17204aca226f6190f0f65/ui/html/home.page.tmpl), [handlers.go](https://github.com/aayush4vedi/gisty/blob/e387093c52e18fa46dc17204aca226f6190f0f65/cmd/web/handlers.go#L18)
 * @Notes:
   * On naming template files: `<name>.<role>.tmpl`, where <role> is either `page`, `partial` or `layout`.
     * Being able to distinguish the role of the template will help us when it comes to creating a cache of templates(later)
