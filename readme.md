@@ -165,7 +165,11 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
             *  Uses the constant `http.StatusNotFound` instead of writing 404. 
     * Update errors in handler
 
-* @Code: [errors.go]() , [handlers.go]()
+* @Code: [errors.go](https://github.com/aayush4vedi/gisty/blob/d83906e46feeb2edbcc670f8a0d86a13e9d6b769/cmd/web/errors.go) , [handlers.go](https://github.com/aayush4vedi/gisty/blob/d83906e46feeb2edbcc670f8a0d86a13e9d6b769/cmd/web/handlers.go)
+
+### 2.4 Isolating the Application Routes 
+* @What: Move routes to `routes.go`
+* @Code: [routes.go](), [main.go]()
 
 
 ## 3. DB-driven Responses
