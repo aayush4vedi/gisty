@@ -30,7 +30,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
   * |Method| url  |  handler | action   |
     |--| -----| -------- | ---------|
     |Any| /    | home     | Display home page|
-    |Any| /gist| showGist | Display a specific gist|
+    |Any| /gist?id=1| showGist | Display a specific gist|
     |Post| /gist/create | createGist | Create new gist |
 
   * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/950013e3f6e6caa46d1764618458de2c8320d9e0/main.go)
@@ -53,7 +53,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
         * Sending request from terminal w/o Postman: `$ curl -i -X POST http://localhost:4000/snippet/create `
  * #Another(& better) approach:
    * Use: `w.Header().Set()` method to add a new header to the response header map & `http.Error()` shortcut
-   * @Code: [main.go]()>createGist
+   * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/c4b4a899aa9eef020bbfae187ddab97513356e8b/main.go#L23)>createGist
         * `w.Header().Set("Allow", "POST") `<br>
           `http.Error(w, "Method Not Allowed", 405) `
    * @Notes: Manipulating the Header Map :
@@ -63,16 +63,15 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
             * `Add()` method appends a new "Cache-Control" header & can be called multiple times:<br>`w.Header().Add("Cache-Control", "public") `<br>`w.Header().Add("Cache-Control", "max-age=31536000") `
             * `Delete` all values for the "Cache-Control" header: <br>`w.Header().Del("Cache-Control")`
  
-### 1.x X
- * @What
- * @Code
- * @Notes
+### 1.3 Adding URL query parameter(for string)
+ * @What: update the `showGist` handler so that it accepts an id query string parameter using `r.URL.Query().Get()` method
+ * @Code: [main.go]()>showGist
+ * @Notes: `io.Writer` == `http.ResponseWriter`
+     * `io.Writer` type is an interface, and the `http.ResponseWriter` object satisfies the interface because it has a `w.Write()` method
+
+ 
 
 
-### 1.x X
- * @What
- * @Code
- * @Notes
 
 ## 2. Configuration & Error Handling
 
