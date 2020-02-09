@@ -78,7 +78,15 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * ui/html : html templates
     * ui/static : static files(css, imgs)
  
-
+### 1.6 Add HTML Template & Inheritence
+* @What: Add a template file & use in headers using `html/template` pkg
+    * Read template file:`ts, err := template.ParseFiles("./ui/html/home.page.tmpl")`
+    * Write template content as response body.(`nil` is in place for dynamic data part):<br>`err = ts.Execute(w, nil)`
+* @Code: [home.page.tmpl](), [handlers.go]()
+* @Notes:
+  * On naming template files: `<name>.<role>.tmpl`, where <role> is either `page`, `partial` or `layout`.
+    * Being able to distinguish the role of the template will help us when it comes to creating a cache of templates(later)
+  * It doesn’t matter so much what naming convention or file extension you use. Go is flexible about this. 
 
 
 ## 2. Configuration & Error Handling
