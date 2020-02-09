@@ -19,6 +19,11 @@ func showGist(w http.ResponseWriter, r *http.Request) {
 }
 
 func createGist(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" { 
+		w.WriteHeader(405) 
+		w.Write([]byte("Method Not Allowed")) 
+		return 
+	} 
 	w.Write([]byte("Create a new gist..."))
 }
 
