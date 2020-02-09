@@ -32,7 +32,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     |Any| /    | home     | Display home page|
     |Any| /gist?id=1| showGist | Display a specific gist|
     |Post| /gist/create | createGist | Create new gist |
-
+    |ANY  |/static/|http.FileServer |Serve a specific static file
   * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/950013e3f6e6caa46d1764618458de2c8320d9e0/main.go)
   * @Notes:
     * In **servemux** longer URL patterns always take precedence over shorter ones. So, if a servemux contains multiple patterns.nice side-effect => you can register patterns in any order and it won’t change how the servemux behaves. 
@@ -90,12 +90,24 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
         * `{{template "title" .}}` to invoke other a named templates called `title` 
         * The dot at the end of the `{{template "title" .}}` action represents any dynamic data that you want to pass to the invoked template(later)
     * Use the `template.ParseFiles()` function to read the files and store the templates in a template set(as variadic param...)
-* @Code: [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/e387093c52e18fa46dc17204aca226f6190f0f65/ui/html/home.page.tmpl), [handlers.go](https://github.com/aayush4vedi/gisty/blob/e387093c52e18fa46dc17204aca226f6190f0f65/cmd/web/handlers.go#L18)
+* @Code: [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/b2b1ffadd001ac638ec6be420adbcbc0183367c4/ui/html/home.page.tmpl), [base.layout.tmpl](https://github.com/aayush4vedi/gisty/blob/b2b1ffadd001ac638ec6be420adbcbc0183367c4/ui/html/base.layout.tmpl) [handlers.go](https://github.com/aayush4vedi/gisty/blob/b2b1ffadd001ac638ec6be420adbcbc0183367c4/cmd/web/handlers.go#L25)
 * @Notes:
   * On naming template files: `<name>.<role>.tmpl`, where <role> is either `page`, `partial` or `layout`.
     * Being able to distinguish the role of the template will help us when it comes to creating a cache of templates(later)
   * It doesn’t matter so much what naming convention or file extension you use. Go is flexible about this. 
 
+### 1.7 Serving Static Files
+* @What: Add a new route so that all requests which begin with `/static/`(subtree path pattern) are handled using this.Using:
+    * `net/http` package ships with a built-in `http.FileServer` handler which you can use to serve files over HTTP from a specific directory.
+    * To create a new http.FileServer handler, we need to use the `http.FileServer()` function like this: <br>
+    `fileServer := http.FileServer(http.Dir("./ui/static")) `
+* @Code: [main.go]()
+* @Notes: Features of Go’s file server:
+    * It sanitizes all request paths by running them through the `path.Clean()` function before searching for a file. This removes any  `.` and `..` elements from the URL path, which helps to stop directory traversal attacks.
+    * But be aware:`http.ServeFile()` does not automatically sanitize the file path. If you’re constructing a file path from untrusted user input, to avoid directory traversal attacks you must sanitize the input with `filepath.Clean()` before using it.
+    * The `Last-Modified` and `If-Modified-Since` headers are transparently supported. If a file hasn’t changed since the user last  requested it, then `http.FileServer` will send a `304 Not Modified` status code instead of the file itself. This helps reduce latency and processing overhead for both the client and server. 
+    * The `Content-Type` is automatically set from the file extension using the `mime.TypeByExtension()` function. You can add your own custom extensions and content types using the `mime.AddExtensionType()` function if necessary. 
+* All incoming HTTP requests are served in their **own goroutine**. For busy servers, this means it’s very likely that the code in or called by your handlers will berunning concurrently. **While this helps make Go blazingly fast**, the downside is that you need to be aware of (and protect against) race conditions when accessing shared resources from your handlers.
 
 ## 2. Configuration & Error Handling
 
