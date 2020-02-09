@@ -1,7 +1,10 @@
 # Gisty
 A naive clone of github's [gists](https://gist.github.com/), created to act as standard guidelines when developing any Go app.
 
-**To run:** `$ go run cmd/web/* `
+## Usage
+* To run`$ go run cmd/web/* `
+* To check code at any step, see the attached files(@Code).It has only those files which were updated, along with the comments for what, why & Huhs
+
 
 
 ## 1. Basic Setup
@@ -125,7 +128,26 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
         } 
         ```
         * Call the ListenAndServe() method on our new http.Server struct: `err := srv.ListenAndServe()`
-* @code: [main.go]()
+* @code: [main.go](https://github.com/aayush4vedi/gisty/blob/c09bef2b40e706db5a3520231f2568bbd41f4e03/cmd/web/main.go#L14)
+
+### 2.2 Dependency injection(Methodising the app)
+>>"Make everything into methods first"
+* @What: Define an application struct to hold the application-wide dependencies for the app & make it available for handler
+    * Defining the struct <br>
+    ```go
+    type application struct { 
+        errorLog *log.Logger 
+        infoLog  *log.Logger 
+    }
+    ```
+    * Import them in `handler.go` to make all the functions as methods
+    * Swap the route declarations to use the application struct's methods as handler functio
+* Code: [main.go]() , [handlers.go]()
+
+
+
+
+
 ## 3. DB-driven Responses
 
 
