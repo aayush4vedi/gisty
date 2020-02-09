@@ -1,7 +1,7 @@
 # Gisty
 A naive clone of github's [gists](https://gist.github.com/), created to act as standard guidelines when developing any Go app.
 
-
+**To run:** `$ go run cmd/web/* `
 
 
 ## 1. Basic Setup
@@ -63,12 +63,20 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
             * `Add()` method appends a new "Cache-Control" header & can be called multiple times:<br>`w.Header().Add("Cache-Control", "public") `<br>`w.Header().Add("Cache-Control", "max-age=31536000") `
             * `Delete` all values for the "Cache-Control" header: <br>`w.Header().Del("Cache-Control")`
  
-### 1.3 Adding URL query parameter(for string)
+### 1.4 Adding URL query parameter(for string)
  * @What: update the `showGist` handler so that it accepts an id query string parameter using `r.URL.Query().Get()` method
- * @Code: [main.go]()>showGist
+ * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/2684831ac7c4447bc9e102006a9f1c734c56f28e/main.go#L20)>showGist
  * @Notes: `io.Writer` == `http.ResponseWriter`
      * `io.Writer` type is an interface, and the `http.ResponseWriter` object satisfies the interface because it has a `w.Write()` method
-
+### 1.5 Project Structure
+* Read: [Setting up a Go project](https://dave.cheney.net/2014/12/01/five-suggestions-for-setting-up-a-go-project)
+* Structure:(Clear separation of GO & non-Go assets)
+  * **cmd** : application-specific code(web, cli)
+    * cmd/web : contains `main.go` & `handlers.go` or this project
+  * **pkg** : reusable non-application-specific code(validation helpers, SQL models)
+  * **ui**
+    * ui/html : html templates
+    * ui/static : static files(css, imgs)
  
 
 
