@@ -169,10 +169,55 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 
 ### 2.4 Isolating the Application Routes 
 * @What: Move routes to `routes.go`
-* @Code: [routes.go](), [main.go]()
+* @Code: [routes.go](https://github.com/aayush4vedi/gisty/blob/9262412f6fea9a52b047a148af80e9b9e21a9c45/cmd/web/routes.go), [main.go](https://github.com/aayush4vedi/gisty/blob/9262412f6fea9a52b047a148af80e9b9e21a9c45/cmd/web/main.go#L30)
 
 
 ## 3. DB-driven Responses
+
+### 3.1 Setting up MySQL
+* Setup a DB in mysql using UTF8 encoding: `CREATE DATABASE gisty CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci; `
+* Switch to it: `USE gisty; `
+* create table: 
+    ```sql
+    CREATE TABLE gists ( 
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+    title VARCHAR(100) NOT NULL, 
+    content TEXT NOT NULL, 
+    created DATETIME NOT NULL, 
+    expires DATETIME NOT NULL 
+    );
+    ```
+* Create index on the created column: `CREATE INDEX idx_snippets_created ON gists(created);`
+* Seed table with dummmy data: 
+    ```sql
+    INSERT INTO gists (title, content, created, expires) VALUES ( 
+    'An old silent pond', 
+    'An old silent pond...\nA frog jumps into the pond,\nsplash! Silence again.
+    UTC_TIMESTAMP(), 
+    DATE_ADD(UTC_TIMESTAMP(), INTERVAL 365 DAY) 
+    ); 
+    ```
+* Display table with entries: `SELECT id, title, expires FROM gists;`
+* Delete table(if wish): `DROP TABLE gists;`
+
+### 3.2 Installing a DB Driver
+
+
+### Installing a Database Driver
+
+### Creating a Database Connection Pool
+
+### Designing a Database Model
+
+### Executing SQL Statements
+
+### Single-record SQL Queries
+
+### Multiple-record SQL Queries4.8. Transactions and Other Details
+
+
+
+
 
 
 ## 4. Dynamic HTML Templates
