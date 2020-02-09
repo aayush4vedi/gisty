@@ -101,7 +101,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * `net/http` package ships with a built-in `http.FileServer` handler which you can use to serve files over HTTP from a specific directory.
     * To create a new http.FileServer handler, we need to use the `http.FileServer()` function like this: <br>
     `fileServer := http.FileServer(http.Dir("./ui/static")) `
-* @Code: [main.go]()
+* @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/b135cc9d77630f09377a19f9ff8c76abcc83d9e6/cmd/web/main.go#L15), [static files](https://github.com/aayush4vedi/gisty/tree/b135cc9d77630f09377a19f9ff8c76abcc83d9e6/ui)
 * @Notes: Features of Go’s file server:
     * It sanitizes all request paths by running them through the `path.Clean()` function before searching for a file. This removes any  `.` and `..` elements from the URL path, which helps to stop directory traversal attacks.
     * But be aware:`http.ServeFile()` does not automatically sanitize the file path. If you’re constructing a file path from untrusted user input, to avoid directory traversal attacks you must sanitize the input with `filepath.Clean()` before using it.
@@ -110,8 +110,22 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * All incoming HTTP requests are served in their **own goroutine**. For busy servers, this means it’s very likely that the code in or called by your handlers will berunning concurrently. **While this helps make Go blazingly fast**, the downside is that you need to be aware of (and protect against) race conditions when accessing shared resources from your handlers.
 
 ## 2. Configuration & Error Handling
-
-
+### 2.1 Better Logging
+* @What: 
+    * #1: use the `log.New()` function to create two new custom loggers
+        * Declaring logs:<br>`infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime) `<br>`errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)`
+        * Writing logs using them `infoLog.Printf("Starting server on %s", *addr) `<br>  `errorLog.Fatal(err) `
+    * #2: http.Server Error Log
+        * Declaring serv log struct: <br>
+        ```go
+        srv := &http.Server{ 
+            Addr:     *addr, 
+            ErrorLog: errorLog, 
+            Handler:  mux, 
+        } 
+        ```
+        * Call the ListenAndServe() method on our new http.Server struct: `err := srv.ListenAndServe()`
+* @code: [main.go]()
 ## 3. DB-driven Responses
 
 
