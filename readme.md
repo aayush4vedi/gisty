@@ -44,14 +44,29 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 ### 1.3 Customize Headers
  * @What: Make handler `createGist` send `405` (method not allowed) HTTP status code unless the request method is POST
    * Use: `r.Method != "POST"` for checking method & `w.WriteHeader()` to send needed status code.
- * @Code
+ * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/844036144582c45f480751859725740bf90255d2/main.go#L22)>createGist
  * @Notes:
    * ABout `w.WriteHeader()`:
         * It’s only possible to call `w.WriteHeader()` once per response, and after the status code has been written it can’t be changed. If you try to call `w.WriteHeader()` a second time Go will log a warning message. 
         * If you don’t call w.WriteHeader() explicitly, then the first call to `w.Write()` will automatically send a 200 OK status code to the user. So, if you want to send a non-200 status code, you must call `w.WriteHeader()` before any call to `w.Write()`. 
    * About `curl`
         * Sending request from terminal w/o Postman: `$ curl -i -X POST http://localhost:4000/snippet/create `
-    
+ * #Another(& better) approach:
+   * Use: `w.Header().Set()` method to add a new header to the response header map & `http.Error()` shortcut
+   * @Code: [main.go]()>createGist
+        * `w.Header().Set("Allow", "POST") `<br>
+          `http.Error(w, "Method Not Allowed", 405) `
+   * @Notes: Manipulating the Header Map :
+        * Similar to `w.Header().Set()` there are also `Add()`,`Del()` and `Get()` methods that you can use to read and manipulate the header map:
+            * `Get`: Retrieve the first value for the "Cache-Control" header<br>`w.Header().Get("Cache-Control")`
+            * `Set` a new/Overwrite cache-control header: <br>`w.Header().Set("Content-Type", "application/json")` 
+            * `Add()` method appends a new "Cache-Control" header & can be called multiple times:<br>`w.Header().Add("Cache-Control", "public") `<br>`w.Header().Add("Cache-Control", "max-age=31536000") `
+            * `Delete` all values for the "Cache-Control" header: <br>`w.Header().Del("Cache-Control")`
+ 
+### 1.x X
+ * @What
+ * @Code
+ * @Notes
 
 
 ### 1.x X
