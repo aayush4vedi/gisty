@@ -289,7 +289,9 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 
 * @What#1: use it in handlers: `s, err := app.gists.Get(id)`
 
-### Multiple-record SQL Queries
+### 3.7 Multiple-record SQL Queries
+* @What: Useing `DB.Query(stmt)` fetch all recently created 10 snippets
+* @Code: [gisty.go]() , [handlers.go]()
 
 ### 4.8. Transactions and Other Details
 

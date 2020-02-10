@@ -12,26 +12,17 @@ type GistModel struct {
 }
 
 func (m *GistModel) Insert(title, content, expires string) (int, error) {
-	// Write the SQL statement we want to execute.
 	stmt := `INSERT INTO gisty (title, content, created, expires)
 	VALUES (?, ?, date(now()), adddate(now(), ?))`
 
-	// Use the Exec() method on the embedded connection pool to execute the
-	// statement. This method returns a sql.Result object, which contains some basic
-	// information about what happened when the statement was execute
 	result, err := m.DB.Exec(stmt, title, content, expires)
 	if err != nil {
 		return 0, err
 	}
-
-	// Use the LastInsertId() method on the result object to get the ID of our
-	// newly inserted record in the snippets table.
 	id, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
-
-	// The ID returned has the type int64, so we convert it to an int type before returning
 	return int(id), nil
 }
 
@@ -48,5 +39,43 @@ func (m *GistModel) Get(id int) (*models.Gist, error) {
 }
 
 func (m *GistModel) Latest() ([]*models.Gist, error) {
-	return nil, nil
+	// Write the SQL statement we want to execute.
+	stmt := `SELECT id, title, content, created, expires FROM gisty 
+	WHERE expires > UTC_TIMESTAMP() ORDER BY created DESC LIMIT 10`
+
+	// Use the Query() method to execute stmt
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+	// Never forget
+	defer rows.Close()
+
+	gists := []*models.Gist{}
+
+	// Use rows.Next to iterate through the rows in the resultset
+	for rows.Next() {
+		// Create a pointer to a new zeroed Snippet struct.
+		s := &models.Gist{}
+		// Use rows.Scan() to copy the values from each field in the row to the
+		// new Snippet object that we created. Again, the arguments to row.Scan
+		// must be pointers to the place you want to copy the data into, and the
+		// number of arguments must be exactly the same as the number of
+		// columns returned by your statement.
+		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		if err != nil {
+			return nil, err
+		}
+		// Append it to the slice of snippets.
+		gists = append(gists, s)
+	}
+	// When the rows.Next() loop has finished we call rows.Err() to retrieve any
+	// error that was encountered during the iteration. It's important to
+	// call this - don't assume that a successful iteration was completed
+	// over the whole resultset.
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	// If everything went OK then return the Snippets slice.
+	return gists, nil
 }
