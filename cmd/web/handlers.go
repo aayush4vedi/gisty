@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/gisty/pkg/models"
 )
 
 func (app *App) home(w http.ResponseWriter, r *http.Request) {
@@ -36,7 +38,19 @@ func (app *App) showGist(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w) // Use the notFound() helper
 		return
 	}
-	fmt.Fprintf(w, "Display a specific gist with ID %d..", id)
+	// Use the SnippetModel object's Get method to retrieve the data for a
+	// specific record based on its ID. If no matching record is found,
+	// return a 404 Not Found response.
+	s, err := app.gists.Get(id)
+	if err == models.ErrNoRecord {
+		app.notFound(w)
+		return
+	} else if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	// Write the snippet data as a plain-text HTTP response body.
+	fmt.Fprintf(w, "%v", s)
 }
 
 //Methodising the function
