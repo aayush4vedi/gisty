@@ -291,14 +291,31 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 
 ### 3.7 Multiple-record SQL Queries
 * @What: Useing `DB.Query(stmt)` fetch all recently created 10 snippets
-* @Code: [gisty.go]() , [handlers.go]()
+* @Code: [gisty.go](https://github.com/aayush4vedi/gisty/blob/b2654366f2558b9f518a015fd4a6db0723047eb4/pkg/models/mysql/gisty.go#L41) , [handlers.go](https://github.com/aayush4vedi/gisty/blob/b2654366f2558b9f518a015fd4a6db0723047eb4/cmd/web/handlers.go#L16)
 
-### 4.8. Transactions and Other Details
-
-
-
-
-
+### 3.8. Transactions, #Connections & Prepared Statement
+* How to maintain **atomicity** (Ans: Use mysql's transactions):
+    * The Problem: 
+        * The calls to `Exec()`, `Query()` and `QueryRow()` can use any connection from the `sql.DB` pool.Even if you have two calls to `Exec()` immediately next to each other in your code, there is no guarantee that they will use the same database connection. 
+        * Sometimes this isn’t acceptable. For instance, if you lock a table with MySQL’s `LOCK TABLES` command you must call `UNLOCK TABLES` on exactly the same connection to avoid a **deadlock**. 
+    * The Solution: 
+        * To guarantee that the same connection is used you can wrap multiple statements in a transaction using `Begin()` which creates a new transaction obj `sql.Tx`
+        * It implements `tx.Rollback()` method in the event of any errors, the transaction ensures that either: 
+            * 1.All statements are executed successfully; or
+            * 2.No statements are executed and the database remains unchanged. 
+    * Demo: [transaction_demo]()
+* Managing **Number of Connections**:
+    * The `sql.DB` connection pool is made up of connections which are either idle or open (in use).
+    * By default, there is no limit on the maximum number of open connections at one time, but the default maximum number of idle connections in the pool is 2
+    * You can set them like this:
+        * `db.SetMaxOpenConns(95) `
+        * `db.SetMaxIdleConns(5)`
+    * Limitation: your database itself probably has a hard limit on the maximum number of connections. E.g.> default limit for MySQL is 151.Beyond that you'd get `"too many connections"` error.
+* Prepared Statement:
+    *  `Exec()`, `Query()` and `QueryRow()` methods all use prepared statements behind the scenes to help prevent SQL injection  attacks.
+    * This might feel rather inefficient because we are creating and recreating the same prepared statements every single time. 
+    * Better Approach:  use of the `DB.Prepare()` method to create our own prepared statement once, and reuse that instead.
+    * Demo: [prepared_stmt_demo.go]()
 
 ## 4. Dynamic HTML Templates
 

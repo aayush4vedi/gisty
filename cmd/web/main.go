@@ -9,11 +9,9 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/gisty/pkg/models/mysql" // New import
+	"github.com/gisty/pkg/models/mysql"
 )
 
-// Add a gists field to the application struct. This will allow us to
-// make the GistModel object available to our handlers.
 type App struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
@@ -39,7 +37,7 @@ func main() {
 	app := &App{
 		errorLog: errorLog,
 		infoLog:  infoLog,
-		gists: &mysql.GistModel{DB: db}, 
+		gists:    &mysql.GistModel{DB: db},
 	}
 
 	srv := &http.Server{
@@ -52,7 +50,6 @@ func main() {
 	err = srv.ListenAndServe()
 	errorLog.Fatal(err)
 }
-
 
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("mysql", dsn)
