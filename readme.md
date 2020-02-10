@@ -211,7 +211,11 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * To install the dependencies for the project — run `go mod download`
     * To uninstall a package: `go get github.com/foo/bar@none `
 
-### Installing a Database Driver
+###  3.3 Creating a Database Connection Pool 
+* @What: Connect the driver with app(& verify connection) using `sql.Open()` function:
+    * db, err := sql.Open(<driver name>, <DSN>) 
+    * DSN(Data Source Name): depends on the type [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
+    * Update `main.go`
 
 ### Creating a Database Connection Pool
 
