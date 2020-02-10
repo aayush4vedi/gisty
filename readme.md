@@ -216,10 +216,24 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * db, err := sql.Open(<driver name>, <DSN>) 
     * DSN(Data Source Name): depends on the type [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
     * Update `main.go`
+* @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/23b8cf9d983934da702a8c0a4f910c75a22bafd9/cmd/web/main.go#L10)
 
-### Creating a Database Connection Pool
-
-### Designing a Database Model
+### 3.4 Designing a Database Model
+* @What: Create model & connect with app:
+    * make dir `pkg/models` & `pkg/models/sql`
+    * Create model `Gist` in `pkg/models/models.go`:
+    ```go
+    type Gist struct {
+        ID      int
+        Title   string
+        Content string
+        Created time.Time
+        Expires time.Time
+    }
+    ```
+    * Write CRUD methods for Mysql DB in `pkg/models/mysql/gisty.go` on model `GistModel`
+    * Use `GistModel` in `main.go`(what's the use of `Gist` then???): `gists: &mysql.GistModel{DB: db}`
+* @Code: [models.go](), [gisty.go](), [main.go]()
 
 ### Executing SQL Statements
 
