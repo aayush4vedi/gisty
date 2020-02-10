@@ -283,9 +283,9 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 	
 	* Use `row.Scan()` to copy the values from each field in `sql.Row `to corr. fields in struct:
 	`err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires) `
-* @Code: [gisty.go](), [handlers.go]()
-    * Shoortcut: 
-        * @Code:
+* @Code: [gisty.go](https://github.com/aayush4vedi/gisty/blob/80d93b96234382e884a3f1fba4c2ebccfec07623/pkg/models/mysql/gisty.go#L38), [handlers.go](https://github.com/aayush4vedi/gisty/blob/80d93b96234382e884a3f1fba4c2ebccfec07623/cmd/web/handlers.go#L35)
+    * Shoorter code: 
+        * @Code:[gisty.go]()
 
 * @What#1: use it in handlers: `s, err := app.gists.Get(id)`
 
