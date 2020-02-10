@@ -201,7 +201,15 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * Delete table(if wish): `DROP TABLE gists;`
 
 ### 3.2 Installing a DB Driver
-
+* **DB Driver** acts as a middleman, translating commands between Go and the MySQL database itself. 
+* List of all available drivers for Mysql on [go-page](https://github.com/golang/go/wiki/SQLDrivers).
+* Used here:  [go-sql-driver/mysql](https://github.com/go-sql-driver/mysql):
+    * `go get github.com/go-sql-driver/mysql `
+    * This creates a new file `go.sum` which contains the cryptographic checksums representing the content of the required packages.
+* @Notes: About verifing the checksums & dependencies
+    * Run the `go mod verify`, this will verify that the checksums of the downloaded packages on your machine match the entries in `go.sum`, so you can be confident that they haven’t been altered. 
+    * To install the dependencies for the project — run `go mod download`
+    * To uninstall a package: `go get github.com/foo/bar@none `
 
 ### Installing a Database Driver
 
