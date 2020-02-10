@@ -232,7 +232,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     }
     ```
     * Write CRUD methods for Mysql DB in `pkg/models/mysql/gisty.go` on model `GistModel`
-    * Use `GistModel` in `main.go`(what's the use of `Gist` then???): `gists: &mysql.GistModel{DB: db}`
+    * Use `GistModel` in `main.go`(~~what's the use of `Gist` then???~~ => It's used when yielding templates with dynamic data, all the fields in template needs to be in this): `gists: &mysql.GistModel{DB: db}`
 * @Code: [models.go](https://github.com/aayush4vedi/gisty/blob/2d9cb7d12a195f1e492826e95c189dbc8b35785f/pkg/models/models.go), [gisty.go](https://github.com/aayush4vedi/gisty/blob/2d9cb7d12a195f1e492826e95c189dbc8b35785f/pkg/models/mysql/gisty.go), [main.go](https://github.com/aayush4vedi/gisty/blob/2d9cb7d12a195f1e492826e95c189dbc8b35785f/cmd/web/main.go#L20)
 * @Notes: On directory structure
     * the directory structure scales nicely if your project has multiple back ends. For example, if some of your data is held in `Redis` you could put all the models for it in a `pkg/models/redis` package.
@@ -285,7 +285,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 	`err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires) `
 * @Code: [gisty.go](https://github.com/aayush4vedi/gisty/blob/80d93b96234382e884a3f1fba4c2ebccfec07623/pkg/models/mysql/gisty.go#L38), [handlers.go](https://github.com/aayush4vedi/gisty/blob/80d93b96234382e884a3f1fba4c2ebccfec07623/cmd/web/handlers.go#L35)
     * Shoorter code: 
-        * @Code:[gisty.go]()
+        * @Code:[gisty.go](https://github.com/aayush4vedi/gisty/blob/baf6c41ba19eb498d1e1f812f7985ae80410d7ee/pkg/models/mysql/gisty.go#L31)
 
 * @What#1: use it in handlers: `s, err := app.gists.Get(id)`
 
@@ -303,7 +303,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
         * It implements `tx.Rollback()` method in the event of any errors, the transaction ensures that either: 
             * 1.All statements are executed successfully; or
             * 2.No statements are executed and the database remains unchanged. 
-    * Demo: [transaction_demo]()
+    * Demo: [transaction_demo](https://github.com/aayush4vedi/gisty/blob/baf6c41ba19eb498d1e1f812f7985ae80410d7ee/examples/transaction_demo.go)
 * Managing **Number of Connections**:
     * The `sql.DB` connection pool is made up of connections which are either idle or open (in use).
     * By default, there is no limit on the maximum number of open connections at one time, but the default maximum number of idle connections in the pool is 2
@@ -315,9 +315,36 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     *  `Exec()`, `Query()` and `QueryRow()` methods all use prepared statements behind the scenes to help prevent SQL injection  attacks.
     * This might feel rather inefficient because we are creating and recreating the same prepared statements every single time. 
     * Better Approach:  use of the `DB.Prepare()` method to create our own prepared statement once, and reuse that instead.
-    * Demo: [prepared_stmt_demo.go]()
+    * Demo: [prepared_stmt_demo.go](https://github.com/aayush4vedi/gisty/blob/baf6c41ba19eb498d1e1f812f7985ae80410d7ee/examples/prepared_stmt_demo.go)
 
 ## 4. Dynamic HTML Templates
+
+### 4.1 Template Actions and Functions
+* @What#1: Displaying dynamic data in `showGist()` handler function(Single piece of data)
+    * Import `html/template` into `handlers.go`
+    * Declare a template `show.page.tmpl` with `dots(.)` as placeholders for dynamic data
+        * Because our `models.Gist` struct has a `Title` field, we could yield the snippet title by writing `{{.Title}}` in our templates(this is where)
+    * Get data from mysql, using `s, err := app.gists.Get(id)`
+    * Render template: `err = ts.Execute(w, s)`
+* @Code: [show.page.tmpl](), [handler.go]()
+
+### 4.2 Displaying Dynamic Data
+
+
+### 4.3 Caching Templates
+
+
+### 4.4 Catching Runtime Errors
+
+
+### 4.5 Common Dynamic Data
+
+
+### 4.5 Custom Template Functions
+
+
+
+
 
 
 ## 5. Middlewares
