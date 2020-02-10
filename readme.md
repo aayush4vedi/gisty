@@ -234,8 +234,10 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * Write CRUD methods for Mysql DB in `pkg/models/mysql/gisty.go` on model `GistModel`
     * Use `GistModel` in `main.go`(what's the use of `Gist` then???): `gists: &mysql.GistModel{DB: db}`
 * @Code: [models.go](), [gisty.go](), [main.go]()
+* @Notes: On directory structure
+    * the directory structure scales nicely if your project has multiple back ends. For example, if some of your data is held in `Redis` you could put all the models for it in a `pkg/models/redis` package.
 
-### Executing SQL Statements
+### 3.5 Executing SQL Statements
 
 ### Single-record SQL Queries
 
