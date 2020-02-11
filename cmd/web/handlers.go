@@ -46,6 +46,10 @@ func (app *App) showGist(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
+
+	// Create an instance of a templateData struct holding the snippet data.
+	data := &templateData{Gist: s}
+
 	files := []string{
 		"./ui/html/show.page.tmpl",
 		"./ui/html/base.layout.tmpl",
@@ -57,7 +61,7 @@ func (app *App) showGist(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	err = ts.Execute(w, s)
+	err = ts.Execute(w, data)  		// Pass in the templateData struct when executing the template
 	if err != nil {
 		app.serverError(w, err)
 		http.Error(w, "Internal Server Error", 500)

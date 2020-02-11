@@ -1,17 +1,17 @@
 {{template "base" .}} 
 
-{{define "title"}}Gist #{{.ID}}{{end}} 
+{{define "title"}}Gist #{{.Gist.ID}}{{end}} 
 
 {{define "body"}} 
 <div class='gist'> 
     <div class='metadata'> 
-        <strong>{{.Title}}</strong> 
-        <span>#{{.ID}}</span> 
+        <strong>{{.Gist.Title}}</strong> 
+        <span>#{{.Gist.ID}}</span> 
     </div> 
-    <pre><code>{{.Content}}</code></pre> 
+    <pre><code>{{.Gist.Content}}</code></pre> 
     <div class='metadata'> 
-        <time>Created: {{.Created}}</time> 
-        <time>Expires: {{.Expires}}</time> 
+        <time>Created: {{.Gist.Created}}</time> 
+        <time>Expires: {{.Gist.Expires}}</time> 
     </div> 
 </div> 
 {{end}} 

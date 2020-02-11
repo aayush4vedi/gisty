@@ -319,16 +319,46 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 
 ## 4. Dynamic HTML Templates
 
-### 4.1 Template Actions and Functions
+### 4.1 Displaying Dynamic Data
 * @What#1: Displaying dynamic data in `showGist()` handler function(Single piece of data)
     * Import `html/template` into `handlers.go`
-    * Declare a template `show.page.tmpl` with `dots(.)` as placeholders for dynamic data
+    * Declare a template `show.page.tmpl` with `dots(.)` - as placeholders for dynamic data
         * Because our `models.Gist` struct has a `Title` field, we could yield the snippet title by writing `{{.Title}}` in our templates(this is where)
     * Get data from mysql, using `s, err := app.gists.Get(id)`
     * Render template: `err = ts.Execute(w, s)`
-* @Code: [show.page.tmpl](), [handler.go]()
+* @Code: [show.page.tmpl](https://github.com/aayush4vedi/gisty/blob/0168474fc9429eb8a7c2bacab00349c897e4ba36/ui/html/show.page.tmpl), [handler.go](https://github.com/aayush4vedi/gisty/blob/0168474fc9429eb8a7c2bacab00349c897e4ba36/cmd/web/handlers.go#L35)
 
-### 4.2 Displaying Dynamic Data
+* @What#2: Displaying Multiple Pieces of Data
+    * Create `template.go` to act as the holding structure for any dynamic data that we want to pass to our HTML template.
+    * Update the `showGist` handler to use this new struct when executing our templates
+    * In `show.page.tmpl` chain the appropriate field names together like `{{.Gist.Title}}`
+
+* @Code: [template.go]() , [show.page.tmpl]() , [handlers.go]()
+
+* @Notes: On `html/template`:
+    * Issue with multiple data:
+        * It allows you to pass in one — and only one — item of dynamic data when rendering a template.
+        * How to overcome it for multiple data: wrap your dynamic data in a struct which acts like a single ‘holding structure’ for your data. 
+    * Inbuilt **Escaping**:     
+        * The pkg automatically escapes any data that is yielded between `{{ }}` tags. This behavior is hugely helpful in avoiding  cross-site scripting (**XSS**) attacks, and is the reason that you should use the `html/template` package instead of the more  eneric `text/template` package that Go also provides. 
+        * E.g.: if your dynamic data is: `<span>{{"<script>alert('xss attack')</script>"}}</span>`<br> it would be rendered harmless as: `<span>&lt;script&gt;alert(&#39;xss attack&#39;)&lt;/script&gt;</span> ` 
+        * **HTML Comments:** Go simply strips out all HTML comments.
+    * **Nested Templates:** It’s really important to note that when you’re invoking one template from another template, dot needs to  be explicitly passed or pipelined to the template being invoked.
+        * You do this by including it at the end of each `{{template}}` or `{{block}}` action, like so: 
+        * ```go
+            {{template "base" .}} 
+            {{template "body" .}} 
+            {{template "footer" .}} 
+            {{block "sidebar" .}}{{end}}
+        ```
+    * **Calling Methods:**
+        * If the object that you’re yielding has methods defined against it, you can call them (so long as they are exported and they return only a single value — or a single value and an error).
+        * **E.g.**:
+        * For example, if `.Gist.Created` has the underlying type `time.Time` you could render the name of the weekday by calling its `Weekday()` method like so: `<span>{{.Gist.Created.Weekday}}</span> `
+        * **Passing Parameters:**  Use the `AddDate()` method to add six months to a time like so: `<span>{{.Gist.Created.AddDate 0 6 0}}</span> `
+            * Notice that this is different syntax to calling functions in Go — the parameters are not surrounded by parentheses and are separated by a single space character, not a comma. 
+
+### 4.2 Template Actions and Functions
 
 
 ### 4.3 Caching Templates
