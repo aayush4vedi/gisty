@@ -415,9 +415,19 @@ In some web applications there may be common dynamic data that you want to inclu
     * create a new `addDefaultData()` helper method to inject the current year into an instance of a `templateData` struct
     * Call this method from `render() `helper to add the default data automatically for each page.
     * Update `footer.tmpl` to display `{{.CurrentYear}}`
-* @Code: [templates.go](), [helpers.go](), [footer.partial.tmpl]()
+* @Code: [templates.go](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/cmd/web/templates.go#L15), [helpers.go](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/cmd/web/helpers.go#L30), [footer.partial.tmpl](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/ui/html/footer.partial.tmpl)
 
 ### 4.5 Custom Template Functions
+* @What: Create a custom `humanDate()` function.Steps:
+    * 1.create a `template.FuncMap` object containing the custom `humanDate()` function<br>
+    ```go
+    func humanDate(t time.Time) string {
+        return t.Format("02 Jan 2006 at 15:04")
+    }
+    ```
+    * 2.Use the `template.Funcs()` method to register this before parsing the templates. <br>`ts, err := template.New(name).Funcs(datefunc).ParseFiles(page) `
+    * Call it in templates: `<td>{{humanDate .Created}}</td>`
+* @Code: [template.go](), [home.page.tmpl]()
 
 
 
