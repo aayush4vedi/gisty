@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -66,17 +67,23 @@ func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) render(w http.ResponseWriter, r *http.Request, name string, td *templateData) {
-	// Retrieve the appropriate template set from the cache based on the page n
-	// (like 'home.page.tmpl'). If no entry exists in the cache with the
-	// provided name, call the serverError helper method that we made earlier.
 	ts, ok := app.templateCache[name]
 	if !ok {
 		app.serverError(w, fmt.Errorf("The template %s does not exist", name))
 		return
 	}
-	// Execute the template set, passing in any dynamic data.
-	err := ts.Execute(w, td)
+
+	// Initialize a new buffer.
+	buf := new(bytes.Buffer)
+
+	// Write the template to the buffer, instead of straight to the
+	// http.ResponseWriter. If there's an error, call our serverError helper and return.
+	err := ts.Execute(w, buf)
 	if err != nil {
 		app.serverError(w, err)
+		return 
 	}
+
+	// Write the contents of the buffer to the http.ResponseWriter
+	buf.WriteTo(w) 
 }

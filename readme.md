@@ -398,11 +398,15 @@ The `html/template` package provides following:
     * Create a `render` method in `handlers.go` which takes in `td = map[string]*template.Template` & renders like: `err := ts.Execute(w, td) `
     * Use `render` in other methods in `handler.go` to shorten the code.
 
-* @Code: [handlers.go](), [main.go]()
+* @Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/0acff887af38613b257a88c197cfc599b86786b6/cmd/web/handlers.go#L68)
 
 
 ### 4.4 Catching Runtime Errors
-
+* @What: If the app throws error, it's sending `200 OK` response along with a half-complete HTML page.This is bad.**To fix:**
+    * Make the template render a two-stage process:(in `render` method)
+    * 1.Make a ‘trial’ render by writing the template into a `buffer`. 
+    * 2.If this fails: respond with an error message.But if it works:write the contents of the buffer to the usual `http.ResponseWriter` 
+* @Code: [helpers.go]()
 
 ### 4.5 Common Dynamic Data
 
