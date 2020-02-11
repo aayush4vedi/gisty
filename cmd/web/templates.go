@@ -6,4 +6,5 @@ import "github.com/gisty/pkg/models"
 // any dynamic data that we want to pass to our HTML templates.
 type templateData struct {
 	Gist *models.Gist
+	Gists []*models.Gist
 }

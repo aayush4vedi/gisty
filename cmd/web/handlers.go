@@ -14,6 +14,16 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
+
+	s, err := app.gists.Latest() 
+	if err != nil { 
+		app.serverError(w, err) 
+		return 
+	} 
+	// Create an instance of a templateData struct holding the slice of 
+	// snippets. 
+	data := &templateData{Gists: s} 
+	
 	files := []string{
 		"./ui/html/home.page.tmpl",
 		"./ui/html/base.layout.tmpl",
@@ -25,7 +35,8 @@ func (app *App) home(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
-	err = ts.Execute(w, nil)
+	// Pass in the templateData struct when executing the template
+	err = ts.Execute(w, data)
 	if err != nil {
 		app.serverError(w, err)
 		http.Error(w, "Internal Server Error", 500)

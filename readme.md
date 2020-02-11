@@ -333,7 +333,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * Update the `showGist` handler to use this new struct when executing our templates
     * In `show.page.tmpl` chain the appropriate field names together like `{{.Gist.Title}}`
 
-* @Code: [template.go]() , [show.page.tmpl]() , [handlers.go]()
+* @Code: [template.go](https://github.com/aayush4vedi/gisty/blob/8b4b0573f203d23e8f4192f127eae9b5ac1963f7/cmd/web/templates.go) , [show.page.tmpl](https://github.com/aayush4vedi/gisty/blob/8b4b0573f203d23e8f4192f127eae9b5ac1963f7/ui/html/show.page.tmpl) , [handlers.go](https://github.com/aayush4vedi/gisty/blob/8b4b0573f203d23e8f4192f127eae9b5ac1963f7/cmd/web/handlers.go#L41)
 
 * @Notes: On `html/template`:
     * Issue with multiple data:
@@ -359,6 +359,32 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
             * Notice that this is different syntax to calling functions in Go — the parameters are not surrounded by parentheses and are separated by a single space character, not a comma. 
 
 ### 4.2 Template Actions and Functions
+The `html/template` package provides following:
+* **Actions**
+
+|Action | Description|
+| ----  | -----------|
+|`{{define}}`  |  |
+|`{{template}}`  |  |
+|`{{block}}`  |  |
+|`{{if .Foo}} C1 {{else}} C2 {{end}} `  | If `.Foo` is not empty then render the content C1, else render the content C2 |
+|`{{with .Foo}} C1 {{else}} C2 {{end}}`  | If `.Foo` is not empty, then set `.` to the value of `.Foo` and render the content C1, else render the content C2  |
+|`{{range .Foo}} C1 {{else}} C2 {{end}}`  | if len(`.Foo`) > 0 then loop over each element, setting `.` to the value of each element and render content C1. If len(`.Foo`) == 0 then render content C2.*Note:* `.Foo` must be an array, slice, map, or channel.  |
+
+* **Functions**
+
+|Function | Description|
+| ----  | -----------|
+|`{{eq .Foo .Bar}}`  | Yields true if `.Foo` == `.Bar`  |
+|`{{ne .Foo .Bar}}`  | Yields true if `.Foo` != `.Bar`  |
+|`{{not .Foo}}`  | Yields the boolean negation of `.Foo`  |
+|`{{or .Foo .Bar}} `  | Yields `.Foo` if `.Foo` is not empty; else yields `.Bar`  |
+|`{{index .Foo i}} `  | Yields value of `.Foo` @ index `i`.`.Foo` must be a map, slice or array |
+|`{{printf "%s-%s" .Foo .Bar}}`  | Yields a string containing the `.Foo` & `.Bar` values.Same as `fmt.Sprintf()` |
+|`{{len .Foo}}`  | Yields the length of `.Foo` as an integer |
+|`{{$bar := len .Foo}} `  | Assign the length of `.Foo` to the template variable `$bar`  |
+
+@Code: [handlers.go]() , [templates.go]() , [home.page.tmpl]() , [show.page.tmpl]()
 
 
 ### 4.3 Caching Templates

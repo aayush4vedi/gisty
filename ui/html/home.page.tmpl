@@ -4,6 +4,27 @@
 
 {{define "body"}} 
 <h2>Latest Gists</h2> 
-<p>There's nothing to see here yet!</p> 
-
+{{if .Gists}}
+    <table>
+        <tr>
+            <th>Title</th>
+            <th>Created</th>
+            <th>ID</th>
+        </tr>
+        {{range .Gists}}
+        <tr>
+            <td><a href='/gist?id={{.ID}}'>{{.Title}}</a></td>
+            <td>{{.Created}}, {{.Created.Weekday}}</td>
+            <td>#{{.ID}}</td>
+        </tr>
+        {{end}}
+    </table>
+    {{else}}
+        <p>There is nothing to see here yet!</p>
+    {{end}}
 {{end}} 
+
+
+
+
+
