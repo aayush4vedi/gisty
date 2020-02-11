@@ -472,15 +472,18 @@ func myMiddleware(next http.Handler) http.Handler {
     * Reqd flow(so that it can act on every request): `secureHeaders → servemux → handler`
     * To do this we’ll need the `secureHeaders` middleware function to wrap our `servemux`, like so in `routes.go` : <br>`return secureHeaders(mux)` 
 
-* @Code: [middleware.go](), [routes.go]()
+* @Code: [middleware.go](https://github.com/aayush4vedi/gisty/blob/09a4529397cd73789fe355b984ca40a2229b80e0/cmd/web/middleware.go#L8), [routes.go](https://github.com/aayush4vedi/gisty/blob/09a4529397cd73789fe355b984ca40a2229b80e0/cmd/web/routes.go#L16)
 
 ### 5.3 Creating beforeMux-middleware: Request-Logger
 * @What: Create a middleware to record the IP address of the user, and which URL and method are being requested.
     * Create `logRequest` middleware func in `middleware.go`
     * Reqd flow: `logRequest ↔ secureHeaders ↔ servemux ↔ application handler `
     * Wrap `ecureHeaders(mux)` using this `logRequest`  in `routes.go` like: `return app.logRequest(secureHeaders(mux))`
-* @Code: [middleware.go](), [routes.go]()
-### 5. Panic Recovery
+* @Code: [middleware.go](https://github.com/aayush4vedi/gisty/blob/f910e67acaa4d29f274de8ee2e4379cefafc3107/cmd/web/middleware.go#L17), [routes.go](https://github.com/aayush4vedi/gisty/blob/f910e67acaa4d29f274de8ee2e4379cefafc3107/cmd/web/routes.go#L15)
+
+### 5.4 Create Panic Recovery Middleware
+* @What:Create a middleware to set `HTTP/1.1 500 Internal Server Error` in case of panic, called `recoverPanic`
+    * @Code: [middleware.go]()
 
 
 ### 5. Composable Middleware Chains
