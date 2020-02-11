@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"flag"
+	"html/template"  // New import 
 	"log"
 	"net/http"
 	"os"
@@ -13,9 +14,10 @@ import (
 )
 
 type App struct {
-	errorLog *log.Logger
-	infoLog  *log.Logger
-	gists    *mysql.GistModel
+	errorLog      *log.Logger
+	infoLog       *log.Logger
+	gists         *mysql.GistModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -26,18 +28,24 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-	// pass DSN to openDB
 	db, err := openDB(*dsn)
 	if err != nil {
 		errorLog.Fatal(err)
 	}
-	//Dont forget to close it
 	defer db.Close()
 
+	// Initialize a new template cache... 
+	templateCache, err := newTemplateCache("./ui/html/") 
+	if err != nil { 
+		errorLog.Fatal(err) 
+	} 
+
+	// And add it to the application dependencies. 
 	app := &App{
 		errorLog: errorLog,
 		infoLog:  infoLog,
 		gists:    &mysql.GistModel{DB: db},
+		templateCache: templateCache, 
 	}
 
 	srv := &http.Server{

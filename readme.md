@@ -384,10 +384,21 @@ The `html/template` package provides following:
 |`{{len .Foo}}`  | Yields the length of `.Foo` as an integer |
 |`{{$bar := len .Foo}} `  | Assign the length of `.Foo` to the template variable `$bar`  |
 
-@Code: [handlers.go]() , [templates.go]() , [home.page.tmpl]() , [show.page.tmpl]()
+@Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/e69196a9853ee8816f5853e8b3363bb33eeca48e/cmd/web/handlers.go#L25) , [templates.go](https://github.com/aayush4vedi/gisty/blob/e69196a9853ee8816f5853e8b3363bb33eeca48e/cmd/web/templates.go) , [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/e69196a9853ee8816f5853e8b3363bb33eeca48e/ui/html/home.page.tmpl) , [show.page.tmpl](https://github.com/aayush4vedi/gisty/blob/e69196a9853ee8816f5853e8b3363bb33eeca48e/ui/html/show.page.tmpl)
 
 
 ### 4.3 Caching Templates
+
+* @What#1: On each load,template files are read from disk.Speeded it up by **caching the templates in memory**. 
+    * Create an in-memory map with the type `map[string]*template.Template` to cache the templates
+    * initialize this cache in the `main()` function & make it available to `handlers` as a dependency via the `App` struct
+* @Code: [templates.go]() , [main.go]()
+
+* @What#2: Create helper function to reduce code duplicationin the `home` and `showSnippet` handlers.
+    * Create a `render` method in `handlers.go` which takes in `td = map[string]*template.Template` & renders like: `err := ts.Execute(w, td) `
+    * Use `render` in other methods in `handler.go` to shorten the code.
+
+* @Code: [handlers.go](), [main.go]()
 
 
 ### 4.4 Catching Runtime Errors
