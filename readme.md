@@ -426,17 +426,66 @@ In some web applications there may be common dynamic data that you want to inclu
     }
     ```
     * 2.Use the `template.Funcs()` method to register this before parsing the templates. <br>`ts, err := template.New(name).Funcs(datefunc).ParseFiles(page) `
-    * Call it in templates: `<td>{{humanDate | .Created}}</td>`
-* @Code: [template.go](https://github.com/aayush4vedi/gisty/blob/89529adde28555a086ea076e009cfa997bd82717/cmd/web/templates.go#L19), [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/89529adde28555a086ea076e009cfa997bd82717/ui/html/home.page.tmpl#L18)
+    * Call it in templates: `{{.Created | humanDate}}`
+* @Code: [template.go](https://github.com/aayush4vedi/gisty/blob/89529adde28555a086ea076e009cfa997bd82717/cmd/web/templates.go#L19), [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/f422a94507445194e4e435ab71418bab57e18288/ui/html/home.page.tmpl#L17)
 * @Notes: On custom template functions:
     * It can accept as many parameters as they need to, but they must *return one value* only. 
     * The only exception to this is if you want to return an error as the second value, in which case that’s OK too.
 
 
+## 5 Middlewares
+
+### 5. About Middleware
+* **Middleware**: is some self-contained code which independently acts on a request before or after normal app handlers. E.g.:  log every request, compress every response, or check a cache before passing to req.
+* Format of declaring middleware:<br>
+    * Notes for `myMiddleware` function:
+        * This middlware function is essentially a wrapper around the `next` handler. 
+        * It establishes an anonymous function(returning a `http.Handler`) which closes over the next handler to form a closure.
+```go
+func myMiddleware(next http.Handler) http.Handler { 
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { 
+        //...  if you want only login-uses to pass this
+        if !isAuthorized(r) { 
+            w.WriteHeader(http.StatusForbidden) 
+            return 
+        } 
+        // ... do epic shit
+        next.ServeHTTP(w, r) 
+    }) 
+} 
+```
+* Positioning the Middleware 
+    * If before-mux(`myMiddleware → servemux →  handler`): it will act on incoming requests.Eg: Request-logger.
+    * If before-mux(`servemux → myMiddleware →  handler `):act on specefic routes.Eg: auth middleware
+
+
+* @Note: 
+    * **On Actual FLow**:It’s important to know that when the last handler in the chain returns, *control is passed back up the chain in the reverse direction*. So, actual flow of control(while execution): <br>
+    `secureHeaders → servemux → application handler → servemux → secureHeaders `
+    * Why do we need headers: 
+        * they essentially instruct the user’s web browser to implement some additional security measures to help prevent XSS and Clickjacking attacks.
+
+
+### 5.2 Creating before-middleware: Set-Security-Headers
+* @What:
+    * Create reqd function `secureHeaders` in `middleware.go` (new file to hold all middlewares)
+    * Reqd flow(so that it can act on every request): `secureHeaders → servemux → handler`
+    * To do this we’ll need the `secureHeaders` middleware function to wrap our `servemux`, like so in `routes.go` : <br>`return secureHeaders(mux)` 
+
+* @Code: [middleware.go](), [routes.go]()
+
+### 5. Request Logging
+
+
+### 5. Panic Recovery
+
+
+### 5. Composable Middleware Chains
 
 
 
-## 5. Middlewares
+
+
 
 
 ## 6. RESTful Routing

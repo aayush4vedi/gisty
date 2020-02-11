@@ -14,7 +14,7 @@
         {{range .Gists}}
         <tr>
             <td><a href='/gist?id={{.ID}}'>{{.Title}}</a></td>
-            <td>{{humanDate | .Created}}, {{.Created.Weekday}}</td>
+            <td>{{.Created | humanDate}}, {{.Created.Weekday}}</td>
             <td>#{{.ID}}</td>
         </tr>
         {{end}}
