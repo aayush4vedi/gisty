@@ -12,6 +12,7 @@ import (
 type templateData struct {
 	Gist  *models.Gist
 	Gists []*models.Gist
+	CurrentYear int 
 }
 
 func newTemplateCache(dir string) (map[string]*template.Template, error) {

@@ -409,7 +409,13 @@ The `html/template` package provides following:
 * @Code: [helpers.go]()
 
 ### 4.5 Common Dynamic Data
-
+In some web applications there may be common dynamic data that you want to include on multiple webpages.E.g.: name,profile picture,CSRF token(in all pages with forms). 
+* @What: Include the current year in the footer on every page
+    * Add a new CurrentYear field to the templateData struct
+    * create a new `addDefaultData()` helper method to inject the current year into an instance of a `templateData` struct
+    * Call this method from `render() `helper to add the default data automatically for each page.
+    * Update `footer.tmpl` to display `{{.CurrentYear}}`
+* @Code: [templates.go](), [helpers.go](), [footer.partial.tmpl]()
 
 ### 4.5 Custom Template Functions
 

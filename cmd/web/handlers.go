@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -64,26 +63,4 @@ func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/gist?id=%d", id), http.StatusSeeOther)
-}
-
-func (app *App) render(w http.ResponseWriter, r *http.Request, name string, td *templateData) {
-	ts, ok := app.templateCache[name]
-	if !ok {
-		app.serverError(w, fmt.Errorf("The template %s does not exist", name))
-		return
-	}
-
-	// Initialize a new buffer.
-	buf := new(bytes.Buffer)
-
-	// Write the template to the buffer, instead of straight to the
-	// http.ResponseWriter. If there's an error, call our serverError helper and return.
-	err := ts.Execute(w, buf)
-	if err != nil {
-		app.serverError(w, err)
-		return 
-	}
-
-	// Write the contents of the buffer to the http.ResponseWriter
-	buf.WriteTo(w) 
 }
