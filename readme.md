@@ -466,7 +466,7 @@ func myMiddleware(next http.Handler) http.Handler {
         * they essentially instruct the user’s web browser to implement some additional security measures to help prevent XSS and Clickjacking attacks.
 
 
-### 5.2 Creating before-middleware: Set-Security-Headers
+### 5.2 Creating beforeMux-middleware: Set-Security-Headers
 * @What:
     * Create reqd function `secureHeaders` in `middleware.go` (new file to hold all middlewares)
     * Reqd flow(so that it can act on every request): `secureHeaders → servemux → handler`
@@ -474,9 +474,12 @@ func myMiddleware(next http.Handler) http.Handler {
 
 * @Code: [middleware.go](), [routes.go]()
 
-### 5. Request Logging
-
-
+### 5.3 Creating beforeMux-middleware: Request-Logger
+* @What: Create a middleware to record the IP address of the user, and which URL and method are being requested.
+    * Create `logRequest` middleware func in `middleware.go`
+    * Reqd flow: `logRequest ↔ secureHeaders ↔ servemux ↔ application handler `
+    * Wrap `ecureHeaders(mux)` using this `logRequest`  in `routes.go` like: `return app.logRequest(secureHeaders(mux))`
+* @Code: [middleware.go](), [routes.go]()
 ### 5. Panic Recovery
 
 
