@@ -392,7 +392,7 @@ The `html/template` package provides following:
 * @What#1: On each load,template files are read from disk.Speeded it up by **caching the templates in memory**. 
     * Create an in-memory map with the type `map[string]*template.Template` to cache the templates
     * initialize this cache in the `main()` function & make it available to `handlers` as a dependency via the `App` struct
-* @Code: [templates.go]() , [main.go]()
+* @Code: [templates.go](https://github.com/aayush4vedi/gisty/blob/6ebcc843fad101b39ceee1db9bb0e45fb66598c4/cmd/web/templates.go#L17) , [main.go](https://github.com/aayush4vedi/gisty/blob/6ebcc843fad101b39ceee1db9bb0e45fb66598c4/cmd/web/main.go#L37)
 
 * @What#2: Create helper function to reduce code duplicationin the `home` and `showSnippet` handlers.
     * Create a `render` method in `handlers.go` which takes in `td = map[string]*template.Template` & renders like: `err := ts.Execute(w, td) `
