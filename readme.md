@@ -426,9 +426,11 @@ In some web applications there may be common dynamic data that you want to inclu
     }
     ```
     * 2.Use the `template.Funcs()` method to register this before parsing the templates. <br>`ts, err := template.New(name).Funcs(datefunc).ParseFiles(page) `
-    * Call it in templates: `<td>{{humanDate .Created}}</td>`
-* @Code: [template.go](), [home.page.tmpl]()
-
+    * Call it in templates: `<td>{{humanDate | .Created}}</td>`
+* @Code: [template.go](https://github.com/aayush4vedi/gisty/blob/89529adde28555a086ea076e009cfa997bd82717/cmd/web/templates.go#L19), [home.page.tmpl](https://github.com/aayush4vedi/gisty/blob/89529adde28555a086ea076e009cfa997bd82717/ui/html/home.page.tmpl#L18)
+* @Notes: On custom template functions:
+    * It can accept as many parameters as they need to, but they must *return one value* only. 
+    * The only exception to this is if you want to return an error as the second value, in which case that’s OK too.
 
 
 
