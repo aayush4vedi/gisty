@@ -483,10 +483,25 @@ func myMiddleware(next http.Handler) http.Handler {
 
 ### 5.4 Create Panic Recovery Middleware
 * @What:Create a middleware to set `HTTP/1.1 500 Internal Server Error` in case of panic, called `recoverPanic`
-    * @Code: [middleware.go]()
+    * Wrap `logRequest` around it: `return app.recoverPanic(app.logRequest(secureHeaders(mux)))`
+    * @Code: [middleware.go](https://github.com/aayush4vedi/gisty/blob/220c7b4d4c2701a21a853ed302ff736dc1821c93/cmd/web/middleware.go#L24) , [routes.go](https://github.com/aayush4vedi/gisty/blob/220c7b4d4c2701a21a853ed302ff736dc1821c93/cmd/web/routes.go#L14)
+* @Notes: On general Panic recovery in goroutine:
+    * If not done by the middleware... and not by the panic recovery built into the Go HTTP server. They will cause your application  to *exit and bring down the server*. 
 
 
-### 5. Composable Middleware Chains
+### 5.5 Composable Middleware Chains- pkg 'alice'
+* @pkg: `justinas/alice` to manage middleware/handler chains. [doc](https://github.com/justinas/alice).Eg:
+    * Better chaining code: 
+        * w/o pkg: `return myMiddleware1(myMiddleware2(myMiddleware3(myHandler))) `
+        * w/ pkg: `return alice.New(myMiddleware1, myMiddleware2, myMiddleware3).Then(myHandler) `
+    * Creating new chains as *variables*:
+    ```go
+    myChain := alice.New(myMiddlewareOne, myMiddlewareTwo) 
+    myOtherChain := myChain.Append(myMiddleware3) 
+    return myOtherChain.Then(myHandler) 
+    ```
+* @What: Use `justinas/alice` in `routes.go` for better middleware chianing
+* @Code: [routes.go]()
 
 
 
