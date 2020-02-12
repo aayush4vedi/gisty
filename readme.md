@@ -555,7 +555,7 @@ mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet))
     * Update `routes.go` using gorilla/mux
     * Remove redundant checkers in `handlers.go`
     * Update `<a href>` routes in templates
-* @Code: [routes.go](), [handlers.go]()
+* @Code: [routes.go](https://github.com/aayush4vedi/gisty/blob/a0bd0684fec039877e4c9202610ba44c1ab5c973/cmd/web/routes.go#L13), [handlers.go](https://github.com/aayush4vedi/gisty/blob/a0bd0684fec039877e4c9202610ba44c1ab5c973/cmd/web/handlers.go)
 
 
 
@@ -567,7 +567,7 @@ mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet))
     * Create method in handler
     * Parse Form data
         * use `r.ParseForm()` method to parse the request body=>get to the form data `r.PostForm.Get()`
-* @Code: [handlers.go]()
+* @Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/28ae442274062243bca8e11f0a204c8c694f6916/cmd/web/handlers.go#L43)
 * @Notes: On multiple fields:
 ```go
 for i, item := range r.PostForm["items"] { 
@@ -575,7 +575,16 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
 } 
 ```
 
-### 7. Data Validation
+### 7.2 Data Validation
+* @What#1: Show all the validation errors
+    * Make an error map `errors := make(map[string]string)` & fill it with all validation errors(along wiht err msg), ig exist.
+* @What#2 : Displaying Validation Errors & Repopulating Fields 
+    * Add new fields to `templateData`struct: 
+        * `FormErrors` to hold any validation errors and 
+        * `FormData` to hold any previously submitted data
+    * update the `createGist` handler, so that if any validation errors are encountered the form is re-displayed with the relevant errors and form data passed to the template.
+    * Updat `create.template` page to display form data if not null(using: `{{with .FormErrors.<field_name>}} `) for all the field.
+* @Code: [handlers.go](), [templates.go](), [create.page.tmpl]()
 
 ### 7. Scaling Data Validation
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"net/url"
 	"path/filepath"
 	"time"
 
@@ -12,6 +13,8 @@ type templateData struct {
 	Gist        *models.Gist
 	Gists       []*models.Gist
 	CurrentYear int
+	FormData    url.Values
+	FormErrors  map[string]string
 }
 
 // Create a humanDate function which returns a nicely formatted string
@@ -37,11 +40,11 @@ func newTemplateCache(dir string) (map[string]*template.Template, error) {
 	for _, page := range pages {
 		name := filepath.Base(page)
 
-		// The template.FuncMap must be registered with the template set before 
+		// The template.FuncMap must be registered with the template set before
 		// call the ParseFiles() method. This means we have to use template.New
-		// create an empty template set, use the Funcs() method to register the 
-		// template.FuncMap, and then parse the file as normal. 
-		ts, err := template.New(name).Funcs(datefunc).ParseFiles(page) 
+		// create an empty template set, use the Funcs() method to register the
+		// template.FuncMap, and then parse the file as normal.
+		ts, err := template.New(name).Funcs(datefunc).ParseFiles(page)
 		if err != nil {
 			return nil, err
 		}
