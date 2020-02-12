@@ -501,17 +501,47 @@ func myMiddleware(next http.Handler) http.Handler {
     return myOtherChain.Then(myHandler) 
     ```
 * @What: Use `justinas/alice` in `routes.go` for better middleware chianing
-* @Code: [routes.go]()
-
-
-
-
-
+* @Code: [routes.go](https://github.com/aayush4vedi/gisty/blob/67e9320ab22a1084ad3062c173b898b9797f9dcf/cmd/web/routes.go#L13)
 
 
 ## 6. RESTful Routing
+* @What: Move to **semantic/clean URLs**(i.e. RESTful)
 
+|Method |Pattern|Handler|Action |
+| ------|-------|-------|-------|
+|GET    | /     | home  |Display the home page |
+|GET |/gist/:id |showGist|Display a specific gist |
+|GET |/gist/create |createGistForm |Display the new gist form |
+|POST |/gist/create |createGist| Create a new gist |
+|GET |/static/|http.FileServer| Serve a specific static file |
+* @Issue:  Go’s servemux doesn’t support method based routing or semantic URLs with variables in them.
+    * How to solve it: 
+    * 1.w/o any 3rd party router: some tricks as talked about in [dotGo2014](https://www.youtube.com/watch?v=yi5A3cK1LNA&feature=youtu.be&t=11m44s)
+    * 2.Use 3rd party package for routing
 
+* List of some good 3rd party routers:
+    * [Gin](https://github.com/gin-gonic/gin) :The fastest(**40X**) full-featured web framework for Golang. Crystal clear.
+        * Good: Minimalist, Usable-easy to learn and debug ,agille-very fast
+        * Bad: Not for big load
+    * [go-martini/martini](https://github.com/go-martini/martini) :Classy web framework for Go
+        * Good:  lean,great third party support base, making it modular and scalable.
+        * Bad: 40x slower than Gin.
+    * [gorilla/mux](https://github.com/gorilla/mux): full featured, method-based routing,support for semantic URLs, REGEX urls.
+        * Con: comparatively slow and memory hungry 
+    * [Web.go](https://github.com/hoisie/web) :The easiest way to create web applications with Go
+        * Good: very lightweight ,offers additional functionality over Go due to a tree routing system
+        * Bad: Doesn’t extend Go that much: There’s extremely little what Web.go does that the standard Go framework cannot do on its own.
+    * [Beego](https://beego.me/)
+        * Good: Full featured, Solid built-in ORM for application database organization
+        * Does automatic caching(higher chance of build failure),  extremely verbose
+    * FastHTTP
+    * [Revel](https://github.com/revel/revel) :
+        * Good: Full featured, self-containted
+        * Bad: Larger Codebase, No MongoDB
+    * [ bmizerany/pat](https://github.com/bmizerany/pat):  more focused,lightweight. Provides method-based routing and support for semantic URLs... and not much else.
+        * Con: pkg isn’t really maintained anymore. 
+    * [go-chi/chi](https://github.com/go-chi/chi) :  uses a radix-tree for pattern matching and has a nice, flexible API. 
+        * It also includes a [go-chi/chi/middleware](https://godoc.org/github.com/go-chi/chi/middleware) sub-package containing a range of useful middleware.
 ## 7. Processing Forms
 
 
