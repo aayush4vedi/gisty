@@ -3,23 +3,22 @@ package main
 import (
 	"net/http"
 
-	"github.com/justinas/alice" // New import
+	"github.com/bmizerany/pat" // New import
+	"github.com/justinas/alice"
 )
 
 func (app *App) routes() http.Handler {
-
-	// Create a middleware chain containing our 'standard' middleware 
-	// which will be used for every request our application receives. 
 	standardMiddleware := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
-		
-	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/gist", app.showGist)
-	mux.HandleFunc("/gist/create", app.createGist)
+	mux := pat.New()
+
+	mux.Get("/", http.HandlerFunc(app.home))
+	mux.Get("/gist/create", http.HandlerFunc(app.createGistForm))
+	mux.Post("/gist/create", http.HandlerFunc(app.createGist))
+	mux.Get("/gist/:id", http.HandlerFunc(app.showGist))
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
-	// Return the 'standard' middleware chain followed by the servemux.
+	mux.Get("/static/", http.StripPrefix("/static", fileServer))
+	
 	return standardMiddleware.Then(mux)
 }

@@ -505,6 +505,8 @@ func myMiddleware(next http.Handler) http.Handler {
 
 
 ## 6. RESTful Routing
+
+### 6.1 About Routers
 * @What: Move to **semantic/clean URLs**(i.e. RESTful)
 
 |Method |Pattern|Handler|Action |
@@ -520,7 +522,7 @@ func myMiddleware(next http.Handler) http.Handler {
     * 2.Use 3rd party package for routing
 
 * List of some good 3rd party routers:
-    * [Gin](https://github.com/gin-gonic/gin) :The fastest(**40X**) full-featured web framework for Golang. Crystal clear.
+    * [Gin](https://github.com/gin-gonic/gin) :The fastest full-featured web framework for Golang.It features a Martini-like API with much better performance -- up to 40X faster.
         * Good: Minimalist, Usable-easy to learn and debug ,agille-very fast
         * Bad: Not for big load
     * [go-martini/martini](https://github.com/go-martini/martini) :Classy web framework for Go
@@ -542,6 +544,20 @@ func myMiddleware(next http.Handler) http.Handler {
         * Con: pkg isn’t really maintained anymore. 
     * [go-chi/chi](https://github.com/go-chi/chi) :  uses a radix-tree for pattern matching and has a nice, flexible API. 
         * It also includes a [go-chi/chi/middleware](https://godoc.org/github.com/go-chi/chi/middleware) sub-package containing a range of useful middleware.
+### 6.2 Implement RESTful Routes in app- Using Pat
+//TODO: IMPLEMENT EVERYTHING WITH GIN LATERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR.
+* Basic Pat Syntax:
+```go
+mux := pat.New() 
+mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet)) 
+```
+* @What: 
+    * Update `routes.go` using gorilla/mux
+    * Remove redundant checkers in `handlers.go`
+    * Update `<a href>` routes in templates
+* @Code: [routes.go](), [handlers.go]()
+
+
 ## 7. Processing Forms
 
 
