@@ -558,7 +558,27 @@ mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet))
 * @Code: [routes.go](), [handlers.go]()
 
 
+
 ## 7. Processing Forms
+
+### 7.1 Setting Up a Form & Parsing Data to It
+* @What: 
+    * Create template
+    * Create method in handler
+    * Parse Form data
+        * use `r.ParseForm()` method to parse the request body=>get to the form data `r.PostForm.Get()`
+* @Code: [handlers.go]()
+* @Notes: On multiple fields:
+```go
+for i, item := range r.PostForm["items"] { 
+fmt.Fprintf(w, "%d: Item %s\n", i, item) 
+} 
+```
+
+### 7. Data Validation
+
+### 7. Scaling Data Validation
+
 
 
 ## 8. Stateful HTTP

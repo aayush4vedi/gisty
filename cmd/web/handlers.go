@@ -41,18 +41,22 @@ func (app *App) showGist(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
-	title := "O snail"
-	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi"
-	expires := "7"
-
-	id, err := app.gists.Insert(title, content, expires)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+	err := r.ParseForm() 
+	if err != nil { 
+		app.clientError(w, http.StatusBadRequest) 
+		return 
+	} 
+	title := r.PostForm.Get("title") 
+	content := r.PostForm.Get("content") 
+	expires := r.PostForm.Get("expires") 
+	id, err := app.gists.Insert(title, content, expires) 
+	if err != nil { 
+		app.serverError(w, err) 
+		return 
+	} 
 	http.Redirect(w, r, fmt.Sprintf("/gist/%d", id), http.StatusSeeOther)
 }
 
 func (app *App) createGistForm(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create a new snippet...")) 
+	app.render(w, r, "create.page.tmpl", nil)  
 }
