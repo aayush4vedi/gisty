@@ -584,11 +584,17 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
         * `FormData` to hold any previously submitted data
     * update the `createGist` handler, so that if any validation errors are encountered the form is re-displayed with the relevant errors and form data passed to the template.
     * Updat `create.template` page to display form data if not null(using: `{{with .FormErrors.<field_name>}} `) for all the field.
-* @Code: [handlers.go](), [templates.go](), [create.page.tmpl]()
+* @Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/3f433490ef94b7c0d39211e2469724e8e9909daf/cmd/web/handlers.go#L75), [templates.go](https://github.com/aayush4vedi/gisty/blob/3f433490ef94b7c0d39211e2469724e8e9909daf/cmd/web/templates.go#L16), [create.page.tmpl](https://github.com/aayush4vedi/gisty/blob/3f433490ef94b7c0d39211e2469724e8e9909daf/ui/html/create.page.tmpl)
 
-### 7. Scaling Data Validation
-
-
+### 7.3 Scaling Data Validation(Refactor)
+* @Issue: if your application has many forms then you can end up with quite a lot of repetition in your code and validation rules.
+    * **Solution** : Creating a `forms` pkg to abstract some of this behavior and reduce the boilerplate code in our handler.
+        * `gisty/pkg/forms/errors.go` :for Add() & Get() errors
+        * `gisty/pkg/forms/forms.go`  : keeps all type of validators
+    * Update `templateData` strcut, by adding `Form     *forms.Form` field
+    * Update handlers
+    * Update templates
+* @Code: [forms/errors.go](), [forms/forms.go](), [templates.go](), [handlers.go](), [create.page.tmpl]()
 
 ## 8. Stateful HTTP
 

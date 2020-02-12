@@ -2,10 +2,10 @@ package main
 
 import (
 	"html/template"
-	"net/url"
 	"path/filepath"
 	"time"
 
+	"github.com/gisty/pkg/forms"
 	"github.com/gisty/pkg/models"
 )
 
@@ -13,8 +13,7 @@ type templateData struct {
 	Gist        *models.Gist
 	Gists       []*models.Gist
 	CurrentYear int
-	FormData    url.Values
-	FormErrors  map[string]string
+	Form        *forms.Form
 }
 
 // Create a humanDate function which returns a nicely formatted string
