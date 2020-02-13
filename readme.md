@@ -790,6 +790,7 @@ r = r.WithContext(ctx)
 
 ## 12. Testing
 
+* To run tests: `go test -v ./cmd/web/ `
 * To run the app, **excluding** a file(`*_test.go`): `$ go run cmd/web/!(*_test).go `
 * ### 12.1 Testing HTTP Handlers
     * In `handlers.go` file and create a new `ping` handler function:
@@ -800,9 +801,19 @@ r = r.WithContext(ctx)
         ```
     * create a new `handlers_test.go` file to hold the test
     * Run the test: `go test -v ./cmd/web/ `
-    * @Code: [handlers.go](), [handlers_test.go]()
+    * @Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/17e1198d3576afb59e92732c31e7af0bb1677ac4/cmd/web/handlers.go#L142), [handlers_test.go](https://github.com/aayush4vedi/gisty/blob/17e1198d3576afb59e92732c31e7af0bb1677ac4/cmd/web/handlers_test.go)
 
+* ### 12.2 Testing Middleware
+* To test the middleware `secureHeaders` in `middleware.go`, create `cmd/web/middleware_test.go` to containg the test ``
+* @Code: [middleware_test.go]()
 
+* ### 12.3 End-To-End Testing
 
+* ### 12.4 Mocking Dependencies
 
+* ### 12.5 Testing HTML Forms
 
+* ### 12.6 Integration Testing
+
+* ### 12.7 Profiling Test Coverage
+(in book @chapter #13)
