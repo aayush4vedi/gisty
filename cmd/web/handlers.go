@@ -80,6 +80,7 @@ func (app *App) signupUserForm(w http.ResponseWriter, r *http.Request) {
 		Form: forms.New(nil),
 	})
 }
+
 func (app *App) signupUser(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -118,8 +119,6 @@ func (app *App) loginUser(w http.ResponseWriter, r *http.Request) {
 		app.clientError(w, http.StatusBadRequest) 
 		return 
 	} 
-	// Check whether the credentials are valid. If they're not, add a generic e
-	// message to the form failures map and re-display the login page. 
 	form := forms.New(r.PostForm) 
 	id, err := app.users.Authenticate(form.Get("email"), form.Get("password")) 
 	if err == models.ErrInvalidCredentials { 
@@ -130,11 +129,14 @@ func (app *App) loginUser(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err) 
 		return 
 	} 
-	// Add the ID of the current user to the session, so that they are now 'logged in'. 
 	app.session.Put(r, "userID", id) 
-	// Redirect the user to the create gist page. 
 	http.Redirect(w, r, "/gist/create", http.StatusSeeOther) 
 }
+
 func (app *App) logoutUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Logout the user...")
+	// Remove the userID from the session data so that the user is 'logged out'
+	app.session.Remove(r, "userID") 
+	// Add a flash message to the session to confirm to the user that they've be
+	app.session.Put(r, "flash", "You've been logged out successfully!") 
+	http.Redirect(w, r, "/", 303) 
 }

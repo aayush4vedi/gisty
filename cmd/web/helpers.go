@@ -16,7 +16,6 @@ func (app *App) render(w http.ResponseWriter, r *http.Request, name string, td *
 
 	buf := new(bytes.Buffer)
 
-	// call addDefaultData from here
 	err := ts.Execute(buf, app.addDefaultData(td, r))
 	if err != nil {
 		app.serverError(w, err)
@@ -26,11 +25,19 @@ func (app *App) render(w http.ResponseWriter, r *http.Request, name string, td *
 	buf.WriteTo(w)
 }
 
-// New method
 func (app *App) addDefaultData(td *templateData, r *http.Request) *templateData {
 	if td == nil {
 		td = &templateData{}
 	}
-	td.CurrentYear = time.Now().Year()
-	return td
+	td.AuthenticatedUser = app.authenticatedUser(r) 
+	td.CurrentYear = time.Now().Year() 
+	td.Flash = app.session.PopString(r, "flash") 
+	return td 
+}
+
+
+// The authenticatedUser method returns the ID of the current user from the 
+// session, or zero if the request is from an unauthenticated user. 
+func (app *App) authenticatedUser(r *http.Request) int { 
+	return app.session.GetInt(r, "userID") 
 }

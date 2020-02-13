@@ -53,7 +53,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
         * It’s only possible to call `w.WriteHeader()` once per response, and after the status code has been written it can’t be changed. If you try to call `w.WriteHeader()` a second time Go will log a warning message. 
         * If you don’t call w.WriteHeader() explicitly, then the first call to `w.Write()` will automatically send a 200 OK status code to the user. So, if you want to send a non-200 status code, you must call `w.WriteHeader()` before any call to `w.Write()`. 
    * About `curl`
-        * Sending request from terminal w/o Postman: `$ curl -i -X POST http://localhost:4000/snippet/create `
+        * Sending request from terminal w/o Postman: `$ curl -i -X POST http://localhost:4000/gist/create `
  * #Another(& better) approach:
    * Use: `w.Header().Set()` method to add a new header to the response header map & `http.Error()` shortcut
    * @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/c4b4a899aa9eef020bbfae187ddab97513356e8b/main.go#L23)>createGist
@@ -187,7 +187,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     expires DATETIME NOT NULL 
     );
     ```
-* Create index on the created column: `CREATE INDEX idx_snippets_created ON gists(created);`
+* Create index on the created column: `CREATE INDEX idx_gists_created ON gists(created);`
 * Seed table with dummmy data: 
     ```sql
     INSERT INTO gists (title, content, created, expires) VALUES ( 
@@ -245,7 +245,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * @What#1: Update the `create` method: i.e. `GisttModel.Insert()` using Go's `DB.Exec()`
     * Write query statement(with `?` as `placeholders`): 
     ```go
-    stmt := `INSERT INTO snippets (title, content, created, expires) 
+    stmt := `INSERT INTO gists (title, content, created, expires) 
     VALUES(?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
     ```
     * Execute it: `result, err := m.DB.Exec(stmt, title, content, expires)`
@@ -279,7 +279,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
     * Use `QueryRow()` to execute the SQL statement.This returns a pointer to a `sql.Row` object:
 	`row := m.DB.QueryRow(stmt, id) `
 	
-    * Initialize a pointer to a new zeroed Snippet struct	`s := &models.Gist{} `
+    * Initialize a pointer to a new zeroed Gist struct	`s := &models.Gist{} `
 	
 	* Use `row.Scan()` to copy the values from each field in `sql.Row `to corr. fields in struct:
 	`err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires) `
@@ -290,7 +290,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * @What#1: use it in handlers: `s, err := app.gists.Get(id)`
 
 ### 3.7 Multiple-record SQL Queries
-* @What: Useing `DB.Query(stmt)` fetch all recently created 10 snippets
+* @What: Useing `DB.Query(stmt)` fetch all recently created 10 gists
 * @Code: [gisty.go](https://github.com/aayush4vedi/gisty/blob/b2654366f2558b9f518a015fd4a6db0723047eb4/pkg/models/mysql/gisty.go#L41) , [handlers.go](https://github.com/aayush4vedi/gisty/blob/b2654366f2558b9f518a015fd4a6db0723047eb4/cmd/web/handlers.go#L16)
 
 ### 3.8. Transactions, #Connections & Prepared Statement
@@ -323,7 +323,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * @What#1: Displaying dynamic data in `showGist()` handler function(Single piece of data)
     * Import `html/template` into `handlers.go`
     * Declare a template `show.page.tmpl` with `dots(.)` - as placeholders for dynamic data
-        * Because our `models.Gist` struct has a `Title` field, we could yield the snippet title by writing `{{.Title}}` in our templates(this is where)
+        * Because our `models.Gist` struct has a `Title` field, we could yield the gist title by writing `{{.Title}}` in our templates(this is where)
     * Get data from mysql, using `s, err := app.gists.Get(id)`
     * Render template: `err = ts.Execute(w, s)`
 * @Code: [show.page.tmpl](https://github.com/aayush4vedi/gisty/blob/0168474fc9429eb8a7c2bacab00349c897e4ba36/ui/html/show.page.tmpl), [handler.go](https://github.com/aayush4vedi/gisty/blob/0168474fc9429eb8a7c2bacab00349c897e4ba36/cmd/web/handlers.go#L35)
@@ -394,7 +394,7 @@ The `html/template` package provides following:
     * initialize this cache in the `main()` function & make it available to `handlers` as a dependency via the `App` struct
 * @Code: [templates.go](https://github.com/aayush4vedi/gisty/blob/6ebcc843fad101b39ceee1db9bb0e45fb66598c4/cmd/web/templates.go#L17) , [main.go](https://github.com/aayush4vedi/gisty/blob/6ebcc843fad101b39ceee1db9bb0e45fb66598c4/cmd/web/main.go#L37)
 
-* @What#2: Create helper function to reduce code duplicationin the `home` and `showSnippet` handlers.
+* @What#2: Create helper function to reduce code duplicationin the `home` and `showGist` handlers.
     * Create a `render` method in `handlers.go` which takes in `td = map[string]*template.Template` & renders like: `err := ts.Execute(w, td) `
     * Use `render` in other methods in `handler.go` to shorten the code.
 
@@ -549,7 +549,7 @@ func myMiddleware(next http.Handler) http.Handler {
 * Basic Pat Syntax:
 ```go
 mux := pat.New() 
-mux.Get("/snippet/:id", http.HandlerFunc(app.showSnippet)) 
+mux.Get("/gist/:id", http.HandlerFunc(app.showGist)) 
 ```
 * @What: 
     * Update `routes.go` using gorilla/mux
@@ -602,12 +602,12 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
     * [alexedwards/scs](https://github.com/alexedwards/scs)
     * [golangcollege/sessions](https://github.com/golangcollege/sessions) --used here
 
-* @What: display a one-time confirmation message which the user sees after they’ve added a new snippet.
+* @What: display a one-time confirmation message which the user sees after they’ve added a new gist.
     * To make this work, we need to start sharing data (or state) between HTTP requests for the same user.The most common way to do that is to implement a session for the user
     * Import session in App in `main.go`
     * Create a new `dynamicMiddleware` chain containing the middleware appropriate for our dynamic application routes only in `routes.go`
     * ### Working with Session Data
-    * Use `session.Put()` in `handlers.go` to add a string value ("Your snippet was saved successfully!") and the corresponding key ("flash") to the session data. Note that if there's no existing session for the current user (or their session has expired) then a new, empty, session for them will automatically be created by the session middleware.
+    * Use `session.Put()` in `handlers.go` to add a string value ("Your gist was saved successfully!") and the corresponding key ("flash") to the session data. Note that if there's no existing session for the current user (or their session has expired) then a new, empty, session for them will automatically be created by the session middleware.
     * Make `showGist` handler to retrieve the confirmation message
     * Update `templateData` in `templates.go` to contain `Flash       string `
     * update our `base.layout.tmpl` file to display the flash message, if one exists
@@ -724,12 +724,27 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
         logging in. If they don’t match, we want to return the `ErrInvalidCredentials` error again. But if they do match, we want to return the user’s id value from the database.
     * Update `Authenticate()` method in `pkg/models/mysql/users.go`
     * Update the `loginUser` handler so that it parses the submitted login form data and calls this `UserModel.Authenticate()` method. 
-* @Code: [login.page.tmpl](), [users.go]() ,[handlers.go]()
+* @Code: [login.page.tmpl](https://github.com/aayush4vedi/gisty/blob/23bdce5b22008091c2b5d3e9dfeb7ace3e31cead/ui/html/login.page.tmpl), [users.go](https://github.com/aayush4vedi/gisty/blob/23bdce5b22008091c2b5d3e9dfeb7ace3e31cead/pkg/models/mysql/users.go#L35) ,[handlers.go](https://github.com/aayush4vedi/gisty/blob/23bdce5b22008091c2b5d3e9dfeb7ace3e31cead/cmd/web/handlers.go#L115)
 
 ### 10.5. User Logout
-
+* To logout:all we need to do is remove the `userID` value from the session
+*  update the `logoutUser` hander to do exactly that
+* @Code: [hanlders.go]()
 
 ### 10.6. User Authorization
+* @What#1: Auth
+    * 1. Only authenticated (logged in) users can create a new gist
+    * 2. The contents of the navigation bar changes depending on whether a user is authenticated or not. Authenticated users should see links to ‘Home’, ‘Create gist’ and ‘Logout’. Unauthenticated users should see links to ‘Home’, ‘Signup’ and ‘Login’.
+* How to check if current user is authenticated user or not by checking for the existence of a `userID` value in their session data.
+* In `helpers.go` file and add `authenticatedUser()` helper function to retrieve and return the `userID` value from the session
+* pass the `userID` value from `authenticatedUser()` to our HTML templates, so that we can toggle the contents of the navigation bar based on whether it is zero or not
+    * add a new `AuthenticatedUser` field to our `templateData` struct in `templates.go`
+    * In `helpers.go` update our `addDefaultData()` helper method so that the user ID is automatically added to the templateData struct every time we render a template
+    * update the `base.layout.tmpl` file to toggle the navigation links using the `{{if .AuthenticatedUser}}` action
+
+* @Code: [ helpers.go](), [base.layout.tmpl]() , [templates.go]()
+
+* @What#2: 
 
 
 ### 10.7. CSRF Protection
