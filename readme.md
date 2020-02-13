@@ -762,8 +762,6 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
     * In this pattern a random CSRF token is generated and sent to the user in a CSRF cookie. This CSRF token is then added to a hidden field in each form that’s vulnerable to CSRF. When the form is submitted, both packages use some middleware to check that the hidden field value and cookie value match. 
 
 
-
-
 ## 11. Using Request Context
 * **What is context:**
     * In essence every `http.Request` that our handlers process has a `context.Context` object embedded in it, which we can use to store  information during the lifetime of the request. 
@@ -792,7 +790,17 @@ r = r.WithContext(ctx)
 
 ## 12. Testing
 
-
+* To run the app, **excluding** a file(`*_test.go`): `$ go run cmd/web/!(*_test).go `
+* ### 12.1 Testing HTTP Handlers
+    * In `handlers.go` file and create a new `ping` handler function:
+        ```go
+        func ping(w http.ResponseWriter, r *http.Request) { 
+            w.Write([]byte("OK")) 
+        } 
+        ```
+    * create a new `handlers_test.go` file to hold the test
+    * Run the test: `go test -v ./cmd/web/ `
+    * @Code: [handlers.go](), [handlers_test.go]()
 
 
 
