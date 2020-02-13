@@ -729,7 +729,7 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
 ### 10.5. User Logout
 * To logout:all we need to do is remove the `userID` value from the session
 *  update the `logoutUser` hander to do exactly that
-* @Code: [hanlders.go]()
+* @Code: [hanlders.go](https://github.com/aayush4vedi/gisty/blob/36ffeddf68f62b2bb0333641fbdd3de909184d95/cmd/web/handlers.go#L136)
 
 ### 10.6. User Authorization
 * @What#1: Auth
@@ -742,9 +742,14 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
     * In `helpers.go` update our `addDefaultData()` helper method so that the user ID is automatically added to the templateData struct every time we render a template
     * update the `base.layout.tmpl` file to toggle the navigation links using the `{{if .AuthenticatedUser}}` action
 
-* @Code: [ helpers.go](), [base.layout.tmpl]() , [templates.go]()
+* @Code: [ helpers.go](https://github.com/aayush4vedi/gisty/blob/36ffeddf68f62b2bb0333641fbdd3de909184d95/cmd/web/helpers.go#L41), [base.layout.tmpl](https://github.com/aayush4vedi/gisty/blob/36ffeddf68f62b2bb0333641fbdd3de909184d95/ui/html/base.layout.tmpl#L17) , [templates.go](https://github.com/aayush4vedi/gisty/blob/36ffeddf68f62b2bb0333641fbdd3de909184d95/cmd/web/templates.go#L18)
 
-* @What#2: 
+* @What#2: **Restriction Url Access** : hiding the `Create gist` navigation link for any user that isn’t logged in.
+    * so that if an unauthenticated user tries to visit any routes: `/gist/create` they are redirected to `/user/login`
+    * How: In `middleware.go` file and create a new middleware function `requireAuthenticatedUser()`
+    * Chain this middleware on all routes having `create` in them: in `routes.go`
+
+* @Code: [middleware.go](), [routes.go]()
 
 
 ### 10.7. CSRF Protection

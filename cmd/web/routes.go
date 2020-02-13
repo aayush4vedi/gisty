@@ -14,16 +14,18 @@ func (app *App) routes() http.Handler {
 	mux := pat.New()
 
 	mux.Get("/", dynamicMiddleware.ThenFunc(app.home))
-	mux.Get("/gist/create", dynamicMiddleware.ThenFunc(app.createGistForm))
-	mux.Post("/gist/create", dynamicMiddleware.ThenFunc(app.createGist))
+	//restrict access
+	mux.Get("/gist/create", dynamicMiddleware.Append(app.requireAuthenticatedUser).ThenFunc(app.createGistForm))
+	mux.Post("/gist/create", dynamicMiddleware.Append(app.requireAuthenticatedUser).ThenFunc(app.createGist))
+	
 	mux.Get("/gist/:id", dynamicMiddleware.ThenFunc(app.showGist))
 
-	// Add the five new routes. 
 	mux.Get("/user/signup", dynamicMiddleware.ThenFunc(app.signupUserForm)) 
 	mux.Post("/user/signup", dynamicMiddleware.ThenFunc(app.signupUser)) 
 	mux.Get("/user/login", dynamicMiddleware.ThenFunc(app.loginUserForm)) 
 	mux.Post("/user/login", dynamicMiddleware.ThenFunc(app.loginUser)) 
-	mux.Post("/user/logout", dynamicMiddleware.ThenFunc(app.logoutUser)) 
+	//restrict access
+	mux.Post("/user/logout", dynamicMiddleware.Append(app.requireAuthenticatedUser).ThenFunc(app.logoutUser)) 
 
 	fileServer := http.FileServer(http.Dir("./ui/static/"))
 	mux.Get("/static/", http.StripPrefix("/static", fileServer))
