@@ -611,12 +611,27 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
     * Make `showGist` handler to retrieve the confirmation message
     * Update `templateData` in `templates.go` to contain `Flash       string `
     * update our `base.layout.tmpl` file to display the flash message, if one exists
-* @Code: [main.go](), [handlers.go](), [templates.go](), [base.layout.tmpl]()
+* @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/c9587eb4efc0eb0a5c2d9173d08809e925b65410/cmd/web/main.go#L23), [routes.go](https://github.com/aayush4vedi/gisty/blob/c9587eb4efc0eb0a5c2d9173d08809e925b65410/cmd/web/routes.go#L12) ,[handlers.go](https://github.com/aayush4vedi/gisty/blob/c9587eb4efc0eb0a5c2d9173d08809e925b65410/cmd/web/handlers.go#L73), [templates.go](https://github.com/aayush4vedi/gisty/blob/c9587eb4efc0eb0a5c2d9173d08809e925b65410/cmd/web/templates.go#L17), [base.layout.tmpl](https://github.com/aayush4vedi/gisty/blob/c9587eb4efc0eb0a5c2d9173d08809e925b65410/ui/html/base.layout.tmpl#L19)
 
 
 
 ## 9. Security
-
+### 9.1 TLS Certificate
+* `crypto/tls package` in Go’s standard library includes a `generate_cert.go` tool that we can use to easily create our own self-signed  certificate.
+    * In `main.go` Use the `ListenAndServeTLS()` method to start the HTTPS server by passing in the paths to the TLS certificate and corresponding private key as its parameters
+    * Not implemented here
+### 9.2 Timeouts:
+* Add timeouts in `main.go`:
+    ```go
+    srv := &http.Server{ 
+        ...
+        // Add Idle, Read and Write timeouts to the server. 
+        IdleTimeout:  time.Minute, 
+        ReadTimeout:  5 * time.Second, 
+        WriteTimeout: 10 * time.Second, 
+    } 
+    ```
+* @Code: [main.go]()
 
 ## 10. Auth
 

@@ -27,7 +27,6 @@ func main() {
 	addr := flag.String("addr", ":3000", "HTTP network address")
 	dsn := flag.String("dsn", "root:password@/gisty?parseTime=true", "DSN for db")
 
-	// Define a new command-line flag for the session secret.It should be 32 bytes long.
 	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "32 bit long secret key")
 	flag.Parse()
 
@@ -45,11 +44,9 @@ func main() {
 		errorLog.Fatal(err)
 	}
 
-	// Use the sessions.New() function to initialize a new session manager,
-	// passing in the secret key as the parameter. Then we configure it so
-	// sessions always expires after 12 hours.
 	session := sessions.New([]byte(*secret))
 	session.Lifetime = 12 * time.Hour
+	session.Secure = true // Set the Secure flag on our session cookies
 
 	app := &App{
 		errorLog:      errorLog,
@@ -63,6 +60,10 @@ func main() {
 		Addr:     *addr,
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
+		//Add timeouts
+		IdleTimeout:  time.Minute, 
+        ReadTimeout:  5 * time.Second, 
+        WriteTimeout: 10 * time.Second, 
 	}
 
 	infoLog.Printf("Server on: %s", *addr)
