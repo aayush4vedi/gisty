@@ -712,10 +712,19 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
         * Update code for `Insert` method in `pkg/models/mysql/users.go`
         * Update `signupUser` handler
 
-* @Code: [signup.page.tmpl]()  ,[models.go]() ,[users.go]() , [handlers.go]()
+* @Code: [signup.page.tmpl](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/ui/html/signup.page.tmpl)  ,[models.go](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/pkg/models/models.go#L28) ,[users.go](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/pkg/models/mysql/users.go) ,  [forms.go](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/pkg/forms/forms.go#L11),  [main.go](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/cmd/web/main.go#L24) ,[handlers.go](https://github.com/aayush4vedi/gisty/blob/03743b04c6a612355235096111398732218157fd/cmd/web/handlers.go#L78)
 
 ### 10.4. User Login
-
+* Create template `login.page.tmpl`
+* hook this up so it’s rendered by our `loginUserForm` handler
+* #### Verifying user details
+    * @What: The core part of this verification logic will take place in the `UserModel.Authenticate()` method of our user model. Specifically,   we’ll need it to do two things: 
+        * 1. First it should retrieve the hashed password associated with the email address from our MySQL `users` table. If the email doesn’t exist in the database, we want to return the `ErrInvalidCredentials` error that we made earlier. 
+        * 2. If the email does exist, we want to compare the bcrypt-hashed password to the plain-text password that the user provided when 
+        logging in. If they don’t match, we want to return the `ErrInvalidCredentials` error again. But if they do match, we want to return the user’s id value from the database.
+    * Update `Authenticate()` method in `pkg/models/mysql/users.go`
+    * Update the `loginUser` handler so that it parses the submitted login form data and calls this `UserModel.Authenticate()` method. 
+* @Code: [login.page.tmpl](), [users.go]() ,[handlers.go]()
 
 ### 10.5. User Logout
 
@@ -724,6 +733,13 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
 
 
 ### 10.7. CSRF Protection
+
+
+
+
+
+
+
 
 ## 11. Using Request Context
 

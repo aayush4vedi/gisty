@@ -65,7 +65,7 @@ func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	app.session.Put(r, "flash", "Snippet successfully created!")
+	app.session.Put(r, "flash", "Gist successfully created!")
 	http.Redirect(w, r, fmt.Sprintf("/gist/%d", id), http.StatusSeeOther)
 }
 
@@ -94,8 +94,6 @@ func (app *App) signupUser(w http.ResponseWriter, r *http.Request) {
 		app.render(w, r, "signup.page.tmpl", &templateData{Form: form})
 		return
 	}
-	// Try to create a new user record in the database. If the email already exi
-	// add an error message to the form and re-display it. 
 	err = app.users.Insert(form.Get("name"), form.Get("email"), form.Get("password"))
 	if err == models.ErrDuplicateEmail { 
 		form.Errors.Add("email", "Address is already in use") 
@@ -105,18 +103,37 @@ func (app *App) signupUser(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err) 
 		return 
 	} 
-	// Otherwise add a confirmation flash message to the session confirming tha
-	// their signup worked and asking them to log in. 
 	app.session.Put(r, "flash", "Your signup was successful. Please log in.") 
-	// And redirect the user to the login page. 
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther) 
 }
 
 func (app *App) loginUserForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Display the user login form...")
+	app.render(w, r, "login.page.tmpl", &templateData{ 
+		Form: forms.New(nil), 
+	}) 
 }
 func (app *App) loginUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Authenticate and login the user...")
+	err := r.ParseForm() 
+	if err != nil { 
+		app.clientError(w, http.StatusBadRequest) 
+		return 
+	} 
+	// Check whether the credentials are valid. If they're not, add a generic e
+	// message to the form failures map and re-display the login page. 
+	form := forms.New(r.PostForm) 
+	id, err := app.users.Authenticate(form.Get("email"), form.Get("password")) 
+	if err == models.ErrInvalidCredentials { 
+		form.Errors.Add("generic", "Email or Password is incorrect") 
+		app.render(w, r, "login.page.tmpl", &templateData{Form: form}) 
+		return 
+	} else if err != nil { 
+		app.serverError(w, err) 
+		return 
+	} 
+	// Add the ID of the current user to the session, so that they are now 'logged in'. 
+	app.session.Put(r, "userID", id) 
+	// Redirect the user to the create gist page. 
+	http.Redirect(w, r, "/gist/create", http.StatusSeeOther) 
 }
 func (app *App) logoutUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Logout the user...")
