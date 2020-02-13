@@ -765,7 +765,30 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
 
 
 ## 11. Using Request Context
-
+* **What is context:**
+    * In essence every `http.Request` that our handlers process has a `context.Context` object embedded in it, which we can use to store  information during the lifetime of the request. 
+* **Useage:**
+    * to pass information between your pieces of middleware and other handlers. 
+* **Syntax**:
+    * we use the `r.Context()` method to retrieve the existing context from a request and assign it to the `ctx` variable <br> `ctx := r.Context() `
+    * Then we use the `context.WithValue()` method to create a new copy of the existing context, with a `*models.User` struct added to it. In this case, we’ve used the string `user` as the key for this data in the context. <br>
+    `ctx = context.WithValue(ctx, "user", &models.User{Name: "Bob Jones"})` 
+    * Then finally we use the `r.WithContext()` method to create a copy of the request containing our new context`r = r.WithContext(ctx) `
+* Shorthand delcaratin:
+```go
+ctx = context.WithValue(r.Context(), "user", &models.User{Name: "Bob Jones"}) 
+r = r.WithContext(ctx) 
+```
+* **Retrieving values from context**
+    * The important thing to explain here is that, behind the scenes, request context values are stored with the type `interface{}`. And that meansthat, after retrieving them from the context, you’ll need to assert them to their original type before you use them.
+    * Use the `r.Context().Value()` method<br>
+    ```go
+    user, ok := r.Context().Value("user").(*models.User) 
+    if !ok { 
+        return fmt.Errorf("could not convert %T to *models.User", user) 
+    } 
+    fmt.Println(user.Name) 
+    ```
 
 ## 12. Testing
 
