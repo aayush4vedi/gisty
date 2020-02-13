@@ -21,6 +21,7 @@ type App struct {
 	gists         *mysql.GistModel
 	templateCache map[string]*template.Template
 	session       *sessions.Session
+	users         *mysql.UserModel
 }
 
 func main() {
@@ -54,6 +55,7 @@ func main() {
 		gists:         &mysql.GistModel{DB: db},
 		templateCache: templateCache,
 		session:       session,
+		users:         &mysql.UserModel{DB: db},
 	}
 
 	srv := &http.Server{
@@ -61,9 +63,9 @@ func main() {
 		ErrorLog: errorLog,
 		Handler:  app.routes(),
 		//Add timeouts
-		IdleTimeout:  time.Minute, 
-        ReadTimeout:  5 * time.Second, 
-        WriteTimeout: 10 * time.Second, 
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	infoLog.Printf("Server on: %s", *addr)

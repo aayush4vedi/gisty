@@ -65,35 +65,59 @@ func (app *App) createGist(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	// Use the Put() method to add a string value ("Your snippet was saved
-	// successfully!") and the corresponding key ("flash") to the session
-	// data. Note that if there's no existing session for the current user
-	// (or their session has expired) then a new, empty, session for them
-	// will automatically be created by the session middleware.
 	app.session.Put(r, "flash", "Snippet successfully created!")
 	http.Redirect(w, r, fmt.Sprintf("/gist/%d", id), http.StatusSeeOther)
 }
 
 func (app *App) createGistForm(w http.ResponseWriter, r *http.Request) {
 	app.render(w, r, "create.page.tmpl", &templateData{
-		// Pass a new empty forms.Form object to the template.
 		Form: forms.New(nil),
 	})
 }
 
-
 func (app *App) signupUserForm(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Display the user signup form...") 
-} 
-func (app *App) signupUser(w http.ResponseWriter, r *http.Request) { 
-	fmt.Fprintln(w, "Create a new user...") 
-} 
-func (app *App) loginUserForm(w http.ResponseWriter, r *http.Request) { 
-	fmt.Fprintln(w, "Display the user login form...") 
-} 
-func (app *App) loginUser(w http.ResponseWriter, r *http.Request) { 
-	fmt.Fprintln(w, "Authenticate and login the user...") 
-} 
-func (app *App) logoutUser(w http.ResponseWriter, r *http.Request) { 
-	fmt.Fprintln(w, "Logout the user...") 
+	app.render(w, r, "signup.page.tmpl", &templateData{
+		Form: forms.New(nil),
+	})
+}
+func (app *App) signupUser(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+	form := forms.New(r.PostForm)
+	form.Required("name", "email", "password")
+	form.MatchesPattern("email", forms.EmailRX)
+	form.MinLength("password", 4)
+	if !form.Valid() {
+		app.render(w, r, "signup.page.tmpl", &templateData{Form: form})
+		return
+	}
+	// Try to create a new user record in the database. If the email already exi
+	// add an error message to the form and re-display it. 
+	err = app.users.Insert(form.Get("name"), form.Get("email"), form.Get("password"))
+	if err == models.ErrDuplicateEmail { 
+		form.Errors.Add("email", "Address is already in use") 
+		app.render(w, r, "signup.page.tmpl", &templateData{Form: form}) 
+		return 
+	} else if err != nil { 
+		app.serverError(w, err) 
+		return 
+	} 
+	// Otherwise add a confirmation flash message to the session confirming tha
+	// their signup worked and asking them to log in. 
+	app.session.Put(r, "flash", "Your signup was successful. Please log in.") 
+	// And redirect the user to the login page. 
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther) 
+}
+
+func (app *App) loginUserForm(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Display the user login form...")
+}
+func (app *App) loginUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Authenticate and login the user...")
+}
+func (app *App) logoutUser(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Logout the user...")
 }

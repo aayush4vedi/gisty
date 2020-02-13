@@ -654,13 +654,65 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
     * Add new handlers for these auth routes in `handlers.go`
     * Add new routes in `routes.go`
     * Update `base.layout.tmpl`
-* @Code: [handlers.go](), [routes.go](), [base.layout.tmpl]()
+* @Code: [handlers.go](https://github.com/aayush4vedi/gisty/blob/6fa2b792e3362c39dcda28bfdd0ddecfca84bcc6/cmd/web/handlers.go#L85), [routes.go](https://github.com/aayush4vedi/gisty/blob/6fa2b792e3362c39dcda28bfdd0ddecfca84bcc6/cmd/web/routes.go#L22), [base.layout.tmpl](https://github.com/aayush4vedi/gisty/blob/6fa2b792e3362c39dcda28bfdd0ddecfca84bcc6/ui/html/base.layout.tmpl#L19)
 
 ### 10.2. Creating a Users Model
+* Run these mysql commands:
+```mysql
+USE gisty; 
 
+CREATE TABLE users ( 
+    id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+    name VARCHAR(255) NOT NULL, 
+    email VARCHAR(255) NOT NULL, 
+    hashed_password CHAR(60) NOT NULL, 
+    created DATETIME NOT NULL 
+); 
+
+ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email); 
+```
+* In `pkg/models/models.go` add a new `User` struct to hold the data for each user, plus a couple of new error types.
+* Create a new file at `pkg/models/mysql/users.go` And then create a new UserModel type with some placeholder function
+* In `main.go`:add a new field to our application struct so that we can make this model available to our handlers with `users         *mysql.UserModel `
 
 ### 10.3. User Signup and Password Encryption
+* Create signup form `signup.page.tmpl`
+    * Importantly, notice that we’re not re-displaying the password if the form fails validation — we don’t want there to be any risk of the browser (or other intermediary) caching the plain-text password entered by the user.
+*  hook this up to the `signupUserForm` handler
 
+* #### Validating & Encryption of the User Input:
+    * Things to check:
+        1. Check that the user’s name, email address and password are not blank. 
+        2. Sanity check the format of the email address. 
+        3. Ensure that the password is at least 10 characters long. 
+        4. Make sure that the email address isn’t already in use.
+    *  creating two helper new methods —  `MinLength()` and `MatchesPattern()` & `MatchesPattern` for sanity checking an email address
+    * In `handlers.go` add some code to process the form and run the validation checks
+    * Now, all that remains is to make sure that the email address isn’t already in use.HOW???
+        * Because we’ve got a `UNIQUE` constraint on the `email` field of our users table, it’s already guaranteed that we won’t end up with two users in our database who have the same email address. So from a business logic and data integrity point of view we are already OK. 
+        * But the question remains about how we communicate any email already in use problem to a user.
+  
+* @Notes: On Encryption
+    * Go provides strong implementation of these encryption algos: `Argon2`, `scrypt` & `bcrypt`
+    * Picked: [bcrypt](https://godoc.org/golang.org/x/crypto/bcrypt) because: it includes some helper functions specifically designed for hashing and checking passwords.
+    * `bcrypt` provides 2 functions:
+    * 1. Create a hash of a given plain-text password: `hash, err := bcrypt.GenerateFromPassword([]byte("my plain text password"), 12)`
+        * Here `12` is called `cost` :means that that 4096 `(2^12)` *bcrypt iterations* will be used to hash the password
+        * it will return `hash` value as a 60-character long hash which looks a bit like this: <br>`$2a$12$NuTjWXm3KKntReFwyBVHyuf/to.HEwTy.eS206TNfkGfr6HzGJSWG`
+        * This function also adds **some random salt** to the password to help avoid **rainbow-table attacks**
+    * 2.  To check if a plain-text password matches a particular hash:<br>
+        ```go
+        hash := []byte("$2a$12$NuTjWXm3KKntReFwyBVHyuf/to.HEwTy.eS206TNfkGfr6GzGJSWG") 
+        err := bcrypt.CompareHashAndPassword(hash, []byte("my plain text password"))
+        ```
+        * return `nil` if the plain-text password matches a particular hash, or an error if they don’t match. 
+* #### Storing the User Details 
+    * @What#1:  store the bcrypt hash of the password
+    * @What#2: manage the potential error caused by a duplicate email violating the `UNIQUE` constraint that we added to the table
+        * Update code for `Insert` method in `pkg/models/mysql/users.go`
+        * Update `signupUser` handler
+
+* @Code: [signup.page.tmpl]()  ,[models.go]() ,[users.go]() , [handlers.go]()
 
 ### 10.4. User Login
 
