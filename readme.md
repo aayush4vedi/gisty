@@ -5,7 +5,74 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * To run`$ go run cmd/web/* `
 * To check code at any step, see the attached files(@Code).It has only those files which were updated, along with the comments for what, why & Huhs.This is also acheivable by matching the commits id+1(starting from section #2.3)
 
+## Demo
+* To play live, click [here]()
 
+## Index
+1. [Basic Setup]()
+    * 1.1 [Basic Web App]()
+    * 1.2 [Add more routes]()
+    * 1.3 [Customize Headers]()
+    * 1.4 [Adding URL query parameter(for string)]()
+    * 1.6 [Add HTML Template & Inheritence]()
+    * 1.7 [Serving Static Files]()
+2. [Configuration & Error Handling]()
+    * 2.1 [Better Logging]()
+    * 2.2 [Dependency injection(Methodising the app)]()
+    * 2.3 [Centralized Error Handling]()
+    * 2.4 [Isolating the Application Routes ]()
+3. [DB-driven Responses]()
+    * 3.1 [Setting up MySQL]()
+    * 3.2 [Installing a DB Driver]()
+    * 3.3 [Creating a Database Connection Pool ]()
+    * 3.4 [Designing a Database Model]()
+    * 3.5 [Executing SQL Statements(`C`)]()
+    * 3.6 [Single-record SQL Queries(`R`)]()
+    * 3.7 [Multiple-record SQL Queries]()
+    * 3.8. [Transactions, #Connections & Prepared Statement]()
+ 4. [Dynamic HTML Templates]()
+    * 4.1 [Displaying Dynamic Data]()
+    * 4.2 [Template Actions and Functions]()
+    * 4.3 [Caching Templates]()
+    * 4.4 [Catching Runtime Errors]()
+    * 4.5 [Common Dynamic Data]()
+    * 4.6 [Custom Template Functions]()
+5. [Middlewares]()
+    * 5.1 [About Middleware]()
+    * 5.2 [Creating beforeMux-middleware: Set-Security-Headers]()
+    * 5.3 [Creating beforeMux-middleware: Request-Logger]()
+    * 5.4 [Create Panic Recovery Middleware]()
+    * 5.5 [Composable Middleware Chains- pkg 'alice']()
+6. [RESTful Routing]()
+    * 6.1 [About Routers]()
+    * 6.2 [Implement RESTful Routes in app- Using `Pat`]()
+7. [Processing Forms]()
+    * 7.1 [Setting Up a Form & Parsing Data to It]()
+    * 7.2 [Data Validation]()
+    * 7.3 [Scaling Data Validation(Refactor)]()
+8. [Stateful HTTP]()
+    * 8.1 [About Session Managers]()
+    * 8.2 [Working with Session Data]()
+9. [Security]()
+    * 9.1 [TLS Certificate]()
+    * 9.2 [Timeouts]()
+10. [Auth]()
+    * 10.1. [Routes Setup]()
+    * 10.2. [Creating a Users Model]()
+    * 10.3. [User Signup and Password Encryption]()
+    * 10.4. [User Login]()
+    * 10.5. [User Logout]()
+    * 10.6. [User Authorization]()
+    * 10.7. [CSRF Protection]()
+11. [Using Request Context]()
+12. [Testing]()
+    * 12.1 [Testing HTTP Handlers]()
+    * 12.2 [Testing Middleware]()
+    * 12.3 [End-To-End Testing]()
+    * 12.4 [Mocking Dependencies]()
+    * 12.5 [Testing HTML Forms]()
+    * 12.6 [Integration Testing]()
+    * 12.7 [Profiling Test Coverage]()
 
 ## 1. Basic Setup
 
@@ -417,7 +484,7 @@ In some web applications there may be common dynamic data that you want to inclu
     * Update `footer.tmpl` to display `{{.CurrentYear}}`
 * @Code: [templates.go](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/cmd/web/templates.go#L15), [helpers.go](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/cmd/web/helpers.go#L30), [footer.partial.tmpl](https://github.com/aayush4vedi/gisty/blob/7575d06c6fc0c3884a651b0575a933195233411e/ui/html/footer.partial.tmpl)
 
-### 4.5 Custom Template Functions
+### 4.6 Custom Template Functions
 * @What: Create a custom `humanDate()` function.Steps:
     * 1.create a `template.FuncMap` object containing the custom `humanDate()` function<br>
     ```go
@@ -435,7 +502,7 @@ In some web applications there may be common dynamic data that you want to inclu
 
 ## 5 Middlewares
 
-### 5. About Middleware
+### 5.1 About Middleware
 * **Middleware**: is some self-contained code which independently acts on a request before or after normal app handlers. E.g.:  log every request, compress every response, or check a cache before passing to req.
 * Format of declaring middleware:<br>
     * Notes for `myMiddleware` function:
@@ -597,6 +664,7 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
 * @Code: [pkg/forms/errors.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/pkg/forms/errors.go), [pkg/forms/forms.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/pkg/forms/forms.go), [templates.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/cmd/web/templates.go#L16), [handlers.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/cmd/web/handlers.go#L18), [create.page.tmpl](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/ui/html/create.page.tmpl#L4)
 
 ## 8. Stateful HTTP
+* ### 8.1 About Session Managers
 * List of **3-rd party session managers**:
     * [gorilla/sessions](https://github.com/gorilla/sessions)
     * [alexedwards/scs](https://github.com/alexedwards/scs)
@@ -606,7 +674,7 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
     * To make this work, we need to start sharing data (or state) between HTTP requests for the same user.The most common way to do that is to implement a session for the user
     * Import session in App in `main.go`
     * Create a new `dynamicMiddleware` chain containing the middleware appropriate for our dynamic application routes only in `routes.go`
-    * ### Working with Session Data
+* ### 8.2 Working with Session Data
     * Use `session.Put()` in `handlers.go` to add a string value ("Your gist was saved successfully!") and the corresponding key ("flash") to the session data. Note that if there's no existing session for the current user (or their session has expired) then a new, empty, session for them will automatically be created by the session middleware.
     * Make `showGist` handler to retrieve the confirmation message
     * Update `templateData` in `templates.go` to contain `Flash       string `
