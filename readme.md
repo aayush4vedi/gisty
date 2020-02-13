@@ -6,7 +6,7 @@ A naive clone of github's [gists](https://gist.github.com/), created to act as s
 * To check code at any step, see the attached files(@Code).It has only those files which were updated, along with the comments for what, why & Huhs.This is also acheivable by matching the commits id+1(starting from section #2.3)
 
 ## Demo
-* To play live, click [here]()
+* To play live, click [here](https://aayush4vedi.github.io/gisty)
 
 ## Index
 Taken from [Book](https://drive.google.com/file/d/1tfDmBhzW9BZOP5RicCwhSTZ2i59IiQLl/view?usp=sharing) Let's Go by Alex Edwards
