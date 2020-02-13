@@ -749,14 +749,17 @@ ALTER TABLE users ADD CONSTRAINT users_uc_email UNIQUE (email);
     * How: In `middleware.go` file and create a new middleware function `requireAuthenticatedUser()`
     * Chain this middleware on all routes having `create` in them: in `routes.go`
 
-* @Code: [middleware.go](), [routes.go]()
+* @Code: [middleware.go](https://github.com/aayush4vedi/gisty/blob/f3826d35bed792bf3c49f00b2fdff0c9bad4323c/cmd/web/middleware.go#L37), [routes.go](https://github.com/aayush4vedi/gisty/blob/f3826d35bed792bf3c49f00b2fdff0c9bad4323c/cmd/web/routes.go#L17)
 
 
 ### 10.7. CSRF Protection
-
-
-
-
+* **How can a CSRF attack happen here**
+    * A user logs into our application. Our session cookie is set to persist for 12 hours, so they will remain logged in even if they  navigate away from the application. 
+    * The user then goes to a malicious website which contains some code that sends a request to POST /snippets/create to add a new snippet to our database. 
+    * Since the user is still logged in to our application, the request is processed with their privileges. Completely unknown to them, a new snippet will be added to our database. 
+* For Token based mitigation check: use `gorilla/csrf` or `justinas/nosurf` pkgs.
+    * Both use `Double Submit Cookie` to prevent attacks. 
+    * In this pattern a random CSRF token is generated and sent to the user in a CSRF cookie. This CSRF token is then added to a hidden field in each form that’s vulnerable to CSRF. When the form is submitted, both packages use some middleware to check that the hidden field value and cookie value match. 
 
 
 
