@@ -14,6 +14,7 @@ type templateData struct {
 	Gists       []*models.Gist
 	CurrentYear int
 	Form        *forms.Form
+	Flash       string 
 }
 
 // Create a humanDate function which returns a nicely formatted string

@@ -594,9 +594,25 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
     * Update `templateData` strcut, by adding `Form     *forms.Form` field
     * Update handlers
     * Update templates
-* @Code: [forms/errors.go](), [forms/forms.go](), [templates.go](), [handlers.go](), [create.page.tmpl]()
+* @Code: [pkg/forms/errors.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/pkg/forms/errors.go), [pkg/forms/forms.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/pkg/forms/forms.go), [templates.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/cmd/web/templates.go#L16), [handlers.go](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/cmd/web/handlers.go#L18), [create.page.tmpl](https://github.com/aayush4vedi/gisty/blob/3cfd3dfa005f258feb7de1975a0110775703824b/ui/html/create.page.tmpl#L4)
 
 ## 8. Stateful HTTP
+* List of **3-rd party session managers**:
+    * [gorilla/sessions](https://github.com/gorilla/sessions)
+    * [alexedwards/scs](https://github.com/alexedwards/scs)
+    * [golangcollege/sessions](https://github.com/golangcollege/sessions) --used here
+
+* @What: display a one-time confirmation message which the user sees after they’ve added a new snippet.
+    * To make this work, we need to start sharing data (or state) between HTTP requests for the same user.The most common way to do that is to implement a session for the user
+    * Import session in App in `main.go`
+    * Create a new `dynamicMiddleware` chain containing the middleware appropriate for our dynamic application routes only in `routes.go`
+    * ### Working with Session Data
+    * Use `session.Put()` in `handlers.go` to add a string value ("Your snippet was saved successfully!") and the corresponding key ("flash") to the session data. Note that if there's no existing session for the current user (or their session has expired) then a new, empty, session for them will automatically be created by the session middleware.
+    * Make `showGist` handler to retrieve the confirmation message
+    * Update `templateData` in `templates.go` to contain `Flash       string `
+    * update our `base.layout.tmpl` file to display the flash message, if one exists
+* @Code: [main.go](), [handlers.go](), [templates.go](), [base.layout.tmpl]()
+
 
 
 ## 9. Security

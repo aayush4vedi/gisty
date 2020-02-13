@@ -3,12 +3,14 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"html/template"  // New import 
+	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golangcollege/sessions" // New import
 
 	"github.com/gisty/pkg/models/mysql"
 )
@@ -18,11 +20,15 @@ type App struct {
 	infoLog       *log.Logger
 	gists         *mysql.GistModel
 	templateCache map[string]*template.Template
+	session       *sessions.Session
 }
 
 func main() {
 	addr := flag.String("addr", ":3000", "HTTP network address")
 	dsn := flag.String("dsn", "root:password@/gisty?parseTime=true", "DSN for db")
+
+	// Define a new command-line flag for the session secret.It should be 32 bytes long.
+	secret := flag.String("secret", "s6Ndh+pPbnzHbS*+9Pk8qGWhTzbpa@ge", "32 bit long secret key")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
@@ -34,18 +40,23 @@ func main() {
 	}
 	defer db.Close()
 
-	// Initialize a new template cache... 
-	templateCache, err := newTemplateCache("./ui/html/") 
-	if err != nil { 
-		errorLog.Fatal(err) 
-	} 
+	templateCache, err := newTemplateCache("./ui/html/")
+	if err != nil {
+		errorLog.Fatal(err)
+	}
 
-	// And add it to the application dependencies. 
+	// Use the sessions.New() function to initialize a new session manager,
+	// passing in the secret key as the parameter. Then we configure it so
+	// sessions always expires after 12 hours.
+	session := sessions.New([]byte(*secret))
+	session.Lifetime = 12 * time.Hour
+
 	app := &App{
-		errorLog: errorLog,
-		infoLog:  infoLog,
-		gists:    &mysql.GistModel{DB: db},
-		templateCache: templateCache, 
+		errorLog:      errorLog,
+		infoLog:       infoLog,
+		gists:         &mysql.GistModel{DB: db},
+		templateCache: templateCache,
+		session:       session,
 	}
 
 	srv := &http.Server{
