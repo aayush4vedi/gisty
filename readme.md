@@ -631,10 +631,47 @@ fmt.Fprintf(w, "%d: Item %s\n", i, item)
         WriteTimeout: 10 * time.Second, 
     } 
     ```
-* @Code: [main.go]()
+* @Code: [main.go](https://github.com/aayush4vedi/gisty/blob/609769d9d66af65354e4c8e281cf12b9cc7ad3a6/cmd/web/main.go#L59)
 
 ## 10. Auth
 
+### 10.1. Routes Setup
+
+| Method | Pattern| Handler | Action |
+| -------|--------|---------|--------|
+| GET | / |home|Display the home page |
+|GET |/gist/:id |showGist |Display a specific gist |
+|GET |/gist/create |createGistForm| Display the new gist form |
+|POST |/gist/create |createGist |Create a new gist| 
+|GET |/user/signup |signupUserForm |Display the user signup form |
+|POST |/user/signup| signupUser|Create a new user |
+|GET |/user/login |loginUserForm |Display the user login form |
+|POST| /user/login |loginUser||Authenticate and login the user |
+|POST| /user/logout| logoutUser||Logout the user |
+|GET |/static/|http.FileServer |Serve a specific static file |
+
+* @What:
+    * Add new handlers for these auth routes in `handlers.go`
+    * Add new routes in `routes.go`
+    * Update `base.layout.tmpl`
+* @Code: [handlers.go](), [routes.go](), [base.layout.tmpl]()
+
+### 10.2. Creating a Users Model
+
+
+### 10.3. User Signup and Password Encryption
+
+
+### 10.4. User Login
+
+
+### 10.5. User Logout
+
+
+### 10.6. User Authorization
+
+
+### 10.7. CSRF Protection
 
 ## 11. Using Request Context
 

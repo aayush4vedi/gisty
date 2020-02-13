@@ -80,3 +80,20 @@ func (app *App) createGistForm(w http.ResponseWriter, r *http.Request) {
 		Form: forms.New(nil),
 	})
 }
+
+
+func (app *App) signupUserForm(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Display the user signup form...") 
+} 
+func (app *App) signupUser(w http.ResponseWriter, r *http.Request) { 
+	fmt.Fprintln(w, "Create a new user...") 
+} 
+func (app *App) loginUserForm(w http.ResponseWriter, r *http.Request) { 
+	fmt.Fprintln(w, "Display the user login form...") 
+} 
+func (app *App) loginUser(w http.ResponseWriter, r *http.Request) { 
+	fmt.Fprintln(w, "Authenticate and login the user...") 
+} 
+func (app *App) logoutUser(w http.ResponseWriter, r *http.Request) { 
+	fmt.Fprintln(w, "Logout the user...") 
+}
